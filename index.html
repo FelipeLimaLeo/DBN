@@ -1,3 +1,5 @@
+
+---
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -7,6 +9,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
 
@@ -279,6 +282,7 @@ table td{
         <a href="#" class="nav-link active" data-section="dashboard">Dashboard</a>
         <a href="#" class="nav-link" data-section="producao">Produção</a>
         <a href="#" class="nav-link" data-section="relatorio">Relatório Diário</a>
+        <a href="#" class="nav-link" data-section="apontamentos">Apontamentos</a>
     </div>
 
     <div class="menu-title">Cadastros</div>
@@ -555,6 +559,44 @@ table td{
 
     </section>
 
+    <section id="apontamentos-section" class="content-section">
+
+        <div class="panel">
+
+            <h2>Apontamento de Produção</h2>
+            <p style="margin-bottom:20px;color:#64748b;">
+                Geração de QRCode e controle de fases produtivas por item.
+            </p>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Nome do Item</label>
+                    <input type="text" id="apontamentoNome" placeholder="Parede Direita">
+                </div>
+
+                <div class="form-group">
+                    <label>Código Item</label>
+                    <input type="text" id="apontamentoCodigo" placeholder="1503">
+                </div>
+
+                <div class="form-group">
+                    <label>Projeto</label>
+                    <input type="text" id="apontamentoProjeto" placeholder="Cela FastFlax">
+                </div>
+
+            </div>
+
+            <button class="btn" onclick="gerarApontamento()">
+                Gerar QRCode do Item
+            </button>
+
+            <div id="listaApontamentos" style="margin-top:30px;"></div>
+
+        </div>
+
+    </section>
+
 </div>
 
 <script>
@@ -677,6 +719,116 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('setorNome').value = '';
         document.getElementById('setorFuncao').value = '';
+
+    }
+
+    // =========================
+    // APONTAMENTO + QRCODE
+    // =========================
+
+    window.gerarApontamento = function(){
+
+        const nome = document.getElementById('apontamentoNome').value;
+        const codigo = document.getElementById('apontamentoCodigo').value;
+        const projeto = document.getElementById('apontamentoProjeto').value;
+
+        if(!nome || !codigo) {
+            alert('Preencha nome e código do item');
+            return;
+        }
+
+        const identificador = `${codigo}-${Date.now()}`;
+
+        const container = document.getElementById('listaApontamentos');
+
+        const card = document.createElement('div');
+
+        card.className = 'panel';
+
+        card.style.marginBottom = '25px';
+
+        card.innerHTML = `
+
+            <div style="display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:flex-start;">
+
+                <div>
+                    <h3 style="margin-bottom:15px;color:#0f172a;">${nome}</h3>
+
+                    <p><strong>Código:</strong> ${codigo}</p>
+                    <p><strong>Projeto:</strong> ${projeto}</p>
+                    <p><strong>ID Produção:</strong> ${identificador}</p>
+
+                    <div style="margin-top:20px;display:flex;flex-direction:column;gap:12px;">
+
+                        <div class="fase-item">
+                            <span>Iniciando</span>
+                            <select onchange="alterarStatusFase(this)">
+                                <option>Pendente</option>
+                                <option>Em andamento</option>
+                                <option>Finalizado</option>
+                            </select>
+                        </div>
+
+                        <div class="fase-item">
+                            <span>Em andamento</span>
+                            <select onchange="alterarStatusFase(this)">
+                                <option>Pendente</option>
+                                <option>Em andamento</option>
+                                <option>Finalizado</option>
+                            </select>
+                        </div>
+
+                        <div class="fase-item">
+                            <span>Finalizado</span>
+                            <select onchange="alterarStatusFase(this)">
+                                <option>Pendente</option>
+                                <option>Em andamento</option>
+                                <option>Finalizado</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div>
+                    <div id="qrcode-${identificador}" style="background:white;padding:15px;border-radius:16px;"></div>
+                </div>
+
+            </div>
+
+        `;
+
+        container.prepend(card);
+
+        new QRCode(document.getElementById(`qrcode-${identificador}`), {
+            text: `Item:${nome} | Código:${codigo} | Projeto:${projeto} | ID:${identificador}`,
+            width: 180,
+            height: 180
+        });
+
+        document.getElementById('apontamentoNome').value = '';
+        document.getElementById('apontamentoCodigo').value = '';
+        document.getElementById('apontamentoProjeto').value = '';
+
+    }
+
+    window.alterarStatusFase = function(select){
+
+        const valor = select.value;
+
+        if(valor === 'Finalizado'){
+            select.style.background = '#dcfce7';
+            select.style.color = '#166534';
+        }
+        else if(valor === 'Em andamento'){
+            select.style.background = '#dbeafe';
+            select.style.color = '#1d4ed8';
+        }
+        else{
+            select.style.background = '#f1f5f9';
+            select.style.color = '#334155';
+        }
 
     }
 
