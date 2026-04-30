@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DBN Industrial ERP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    const links = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.content-section');
+
+    links.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        links.forEach(item => item.classList.remove('active'));
+        this.classList.add('active');
+
+        const section = this.dataset.section;
+
+        sections.forEach(sec => {
+          sec.style.display = 'none';
+        });
+
+        document.getElementById(section + '-section').style.display = 'block';
+      });
+    });
+
+  </script>
+
+  <style>
+
+    :root {
+      --primary: #f97316;
+      --primary-dark: #ea580c;
+      --dark: #0f172a;
+      --gray: #64748b;
+      --light: #f8fafc;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #f97316;
+      --shadow: 0 10px 30px rgba(15,23,42,0.08);
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f1f5f9 0%, #fff7ed 100%);
+      color: #1f2937;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 280px;
+      height: 100vh;
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      color: white;
+      padding: 25px;
+      position: fixed;
+      overflow-y: auto;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 35px;
+      color: #60a5fa;
+    }
+
+    .menu-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #9ca3af;
+      margin: 25px 0 10px;
+    }
+
+    .menu a {
+      display: block;
+      text-decoration: none;
+      color: #e5e7eb;
+      padding: 12px 15px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      transition: 0.3s;
+      font-size: 14px;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+      background: linear-gradient(135deg,#f97316,#ea580c);
+      color: white;
+    }
+
+    .main {
+      margin-left: 270px;
+      width: calc(100% - 270px);
+      padding: 30px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .topbar h1 {
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .user {
+      background: white;
+      padding: 10px 18px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      border: 1px solid rgba(255,255,255,0.5);
+      backdrop-filter: blur(10px);
+      background: white;
+      padding: 22px;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card-title {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 12px;
+    }
+
+    .card-value {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .green { color: #16a34a; }
+    .orange { color: #f97316; }
+    .blue { color: #2563eb; }
+    .red { color: #dc2626; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 18px;
+      padding: 25px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    }
+
+    .panel h2 {
+      color: var(--dark);
+      font-weight: 600;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table th {
+      border-bottom: 1px solid var(--border);
+      background: #fff7ed;
+      color: #ea580c;
+      text-align: left;
+      padding: 14px;
+      font-size: 13px;
+    }
+
+    table td {
+      color: #334155;
+      padding: 14px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 14px;
+    }
+
+    .status {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status.andamento {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .status.finalizado {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status.atrasado {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .timeline-item {
+      border-left: 4px solid #2563eb;
+      padding-left: 15px;
+    }
+
+    .timeline-item h4 {
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .timeline-item p {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .bom {
+      background: white;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+    }
+
+    .tree ul {
+      list-style: none;
+      padding-left: 20px;
+    }
+
+    .tree li {
+      margin: 12px 0;
+      position: relative;
+    }
+
+    .tree li::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 12px;
+      width: 10px;
+      height: 1px;
+      background: #9ca3af;
+    }
+
+    .tree span {
+      background: #eff6ff;
+      padding: 8px 12px;
+      border-radius: 10px;
+      display: inline-block;
+      font-size: 14px;
+    }
+
+    .sector-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .sector-card {
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #111827;
+      color: white;
+      padding: 18px;
+      border-radius: 14px;
+    }
+
+    .sector-card h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .sector-card p {
+      font-size: 13px;
+      color: #d1d5db;
+    }
+
+    @media(max-width: 1000px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .report-filters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .report-filters input,
+    .report-filters select {
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: white;
+      min-width: 180px;
+      font-size: 14px;
+    }
+
+    .report-table {
+      overflow-x: auto;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
+    }
+
+    .form-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+      gap:16px;
+      margin-bottom:20px;
+    }
+
+    .form-group {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .form-group label {
+      font-size:13px;
+      color:#475569;
+      font-weight:600;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding:14px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:white;
+      font-size:14px;
+    }
+
+    .btn {
+      border:none;
+      padding:14px 20px;
+      border-radius:12px;
+      background:linear-gradient(135deg,#2563eb,#1d4ed8);
+      color:white;
+      font-weight:600;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .btn:hover {
+      transform:translateY(-2px);
+    }
+
+    .action-buttons {
+      display:flex;
+      gap:12px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+    }
+
+    @media(max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="logo">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="background:#f97316;width:58px;height:58px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:white;box-shadow:0 10px 25px rgba(249,115,22,0.35);">DBN</div>
+        <div>
+          <div style="font-size:22px;font-weight:700;color:white;line-height:1;">DBN ERP</div>
+          <div style="font-size:11px;color:#cbd5e1;margin-top:6px;">SISTEMAS CONSTRUTIVOS</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-title">Dashboard</div>
+    <div class="menu">
+      <a href="#" class="active nav-link" data-section="dashboard">Dashboard Geral</a>
+      <a href="#" class="nav-link" data-section="producao">Produção</a>
+      <a href="#" class="nav-link" data-section="pcp">PCP</a>
+      <a href="#" class="nav-link" data-section="qualidade">Qualidade</a>
+      <a href="#" class="nav-link" data-section="expedicao">Expedição</a>
+      <a href="#" class="nav-link" data-section="relatorio">Relatório Diário</a>
+    </div>
+
+    <div class="menu-title">Cadastros</div>
+    <div class="menu">
+      <a href="#" class="nav-link" data-section="produtos">Produtos</a>
+      <a href="#" class="nav-link" data-section="usuarios">Usuários</a>
+      <a href="#" class="nav-link" data-section="setores">Setores</a>
+      <a href="#">Estrutura BOM</a>
+      <a href="#">Obras</a>
+      <a href="#">Etapas</a>
+    </div>
+
+    <div class="menu-title">Estoque</div>
+    <div class="menu">
+      <a href="#">Almoxarifado</a>
+    </div>
+
+    <div class="menu-title">Setores</div>
+    <div class="menu">
+      <a href="#">CAD</a>
+      <a href="#">Serralheria</a>
+      <a href="#">GRC</a>
+      <a href="#">Montagem</a>
+      <a href="#">ML</a>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <section id="dashboard-section" class="content-section">
+
+    <div class="topbar">
+      <div>
+        <h1>DBN Industrial ERP</h1>
+        <p>Gestão integrada de produção modular industrial</p>
+      </div>
+
+      <div class="user">
+        Administrador • PCP
+      </div>
+    </div>
+
+    <section class="cards">
+      
+      <div class="card glass">
+        <div class="card-title">Produção do Dia</div>
+        <div class="card-value orange">82%</div>
+      </div>
+      <div class="card glass">
+        <div class="card-title">Produções em andamento</div>
+        <div class="card-value blue">42</div>
+      </div>
+
+      <div class="card glass">
+        <div class="card-title">Itens finalizados</div>
+        <div class="card-value green">128</div>
+      </div>
+
+      <div class="card glass">
+        <div class="card-title">Etapas atrasadas</div>
+        <div class="card-value red">7</div>
+      </div>
+
+      <div class="card glass">
+        <div class="card-title">Expedições hoje</div>
+        <div class="card-value orange">15</div>
+      </div>
+    </section>
+
+    <section class="grid">
+
+      <div class="panel glass">
+        <h2>Produção em Andamento</h2>
+
+        <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Obra</th>
+              <th>Produto</th>
+              <th>Etapa</th>
+              <th>Setor</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>FastFlax Campinas</td>
+              <td>Cela Completa - 1900</td>
+              <td>Concretagem</td>
+              <td>CAD</td>
+              <td><span class="status andamento">Em andamento</span></td>
+            </tr>
+
+            <tr>
+              <td>FastFlax Vinhedo</td>
+              <td>Parede Direita - 1503</td>
+              <td>Armação</td>
+              <td>Serralheria</td>
+              <td><span class="status andamento">Em andamento</span></td>
+            </tr>
+
+            <tr>
+              <td>FastFlax Jundiaí</td>
+              <td>Parede Porta - 1504</td>
+              <td>Qualidade</td>
+              <td>Qualidade</td>
+              <td><span class="status finalizado">Finalizado</span></td>
+            </tr>
+
+            <tr>
+              <td>FastFlax São Paulo</td>
+              <td>Passarela - 400</td>
+              <td>Montagem</td>
+              <td>Montagem</td>
+              <td><span class="status atrasado">Atrasado</span></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <div class="panel glass">
+        <h2>Fluxo da Produção</h2>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <h4>Serralheria</h4>
+            <p>Armação • Parede Direita</p>
+          </div>
+
+          <div class="timeline-item">
+            <h4>CAD</h4>
+            <p>Forma e Armação</p>
+          </div>
+
+          <div class="timeline-item">
+            <h4>GRC</h4>
+            <p>Cura do concreto</p>
+          </div>
+
+          <div class="timeline-item">
+            <h4>Qualidade</h4>
+            <p>Inspeção final</p>
+          </div>
+
+          <div class="timeline-item">
+            <h4>Expedição</h4>
+            <p>Separação e envio</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="grid">
+
+      <div class="panel glass">
+        <h2>Controle de Produção por Setor</h2>
+        <div style="height:320px;position:relative;">
+          <canvas id="productionChart"></canvas>
+        </div>
+      </div>
+
+      <div class="panel glass">
+        <h2>Estoque Almoxarifado</h2>
+
+        <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Saldo</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr>
+              <td>Concreto - 1400</td>
+              <td>42 m³</td>
+            </tr>
+
+            <tr>
+              <td>Armação - 1401</td>
+              <td>850 Kg</td>
+            </tr>
+
+            <tr>
+              <td>Insert - 1402</td>
+              <td>240 UN</td>
+            </tr>
+
+            <tr>
+              <td>Janela - 1403</td>
+              <td>55 UN</td>
+            </tr>
+
+            <tr>
+              <td>Porta - 1404</td>
+              <td>38 UN</td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="bom">
+      <h2 style="margin-bottom: 25px;">Estrutura do Produto (BOM)</h2>
+
+      <div class="tree">
+        <ul>
+          <li>
+            <span>1900 • Cela Completa</span>
+            <ul>
+              <li>
+                <span>1501 • Parede com Janela</span>
+                <ul>
+                  <li><span>1400 • Concreto</span></li>
+                  <li><span>1401 • Armação</span></li>
+                  <li><span>1402 • Insert</span></li>
+                  <li><span>1403 • Janela</span></li>
+                </ul>
+              </li>
+
+              <li>
+                <span>1502 • Parede Esquerda</span>
+                <ul>
+                  <li><span>1400 • Concreto</span></li>
+                  <li><span>1401 • Armação</span></li>
+                  <li><span>1402 • Insert</span></li>
+                  <li><span>1404 • Porta</span></li>
+                </ul>
+              </li>
+
+              <li><span>1503 • Parede Direita</span></li>
+              <li><span>1504 • Parede Porta</span></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Setores da Fábrica</h2>
+
+      <div class="sector-grid">
+
+        <div class="sector-card">
+          <h3>PCP</h3>
+          <p>Monitoramento geral, relatórios e controle total.</p>
+        </div>
+
+        <div class="sector-card">
+          <h3>Qualidade</h3>
+          <p>Controle e aprovação dos processos produtivos.</p>
+        </div>
+
+        <div class="sector-card">
+          <h3>Expedição</h3>
+          <p>Programação e controle de expedição.</p>
+        </div>
+
+        <div class="sector-card">
+          <h3>CAD</h3>
+          <p>Controle das etapas de forma e concretagem.</p>
+        </div>
+
+        <div class="sector-card">
+          <h3>Serralheria</h3>
+          <p>Controle de armações e estruturas.</p>
+        </div>
+
+        <div class="sector-card">
+          <h3>GRC</h3>
+          <p>Controle de produção e acabamento.</p>
+        </div>
+
+        <div class="sector-card">
+          <h3>Almox</h3>
+          <p>Controle de estoque e materiais industriais.</p>
+        </div>
+
+        <div class="sector-card">
+          <h3>Montagem</h3>
+          <p>Controle das etapas de montagem.</p>
+        </div>
+
+      </div>
+    </section>
+
+      </section>
+
+    <section id="producao-section" class="content-section" style="display:none;">
+      <div class="panel glass">
+        <h2>Controle de Produção</h2>
+        <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Etapa</th>
+              <th>Setor</th>
+              <th>Responsável</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Parede Direita - 1503</td>
+              <td>Concretagem</td>
+              <td>CAD</td>
+              <td>João Silva</td>
+              <td><span class="status andamento">Em andamento</span></td>
+            </tr>
+            <tr>
+              <td>Cela Completa - 1900</td>
+              <td>Montagem</td>
+              <td>Montagem</td>
+              <td>Carlos Lima</td>
+              <td><span class="status andamento">Em andamento</span></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="pcp-section" class="content-section" style="display:none;">
+      <div class="panel glass">
+        <h2>PCP - Planejamento e Controle</h2>
+        <div class="cards">
+          <div class="card glass">
+            <div class="card-title">Ordens abertas</div>
+            <div class="card-value blue">56</div>
+          </div>
+          <div class="card glass">
+            <div class="card-title">Produções atrasadas</div>
+            <div class="card-value red">7</div>
+          </div>
+          <div class="card glass">
+            <div class="card-title">Eficiência</div>
+            <div class="card-value green">92%</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="qualidade-section" class="content-section" style="display:none;">
+      <div class="panel glass">
+        <h2>Controle de Qualidade</h2>
+        <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Inspeção</th>
+              <th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Parede Porta - 1504</td>
+              <td>Estrutural</td>
+              <td><span class="status finalizado">Aprovado</span></td>
+            </tr>
+            <tr>
+              <td>Passarela - 400</td>
+              <td>Acabamento</td>
+              <td><span class="status atrasado">Revisar</span></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="expedicao-section" class="content-section" style="display:none;">
+      <div class="panel glass">
+        <h2>Expedição</h2>
+        <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Obra</th>
+              <th>Produto</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>FastFlax Campinas</td>
+              <td>Cela Completa - 1900</td>
+              <td><span class="status andamento">Separando</span></td>
+            </tr>
+            <tr>
+              <td>FastFlax Vinhedo</td>
+              <td>Passarela - 400</td>
+              <td><span class="status finalizado">Expedido</span></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="relatorio-section" class="content-section" style="display:none;">
+
+      <div class="panel glass">
+
+        <div class="report-header">
+          <div>
+            <h2>Relatório Diário de Produção</h2>
+            <p style="color:#64748b; margin-top:5px;">Modelo baseado na planilha de produção semanal</p>
+          </div>
+
+          <div class="report-filters">
+            <input type="date">
+            <select>
+              <option>Todas as Obras</option>
+              <option>FastFlax Campinas</option>
+              <option>FastFlax Vinhedo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="report-table">
+          <div style="overflow-x:auto;">
+        <table>
+            <thead>
+              <tr>
+                <th>Setor</th>
+                <th>Seg</th>
+                <th>Ter</th>
+                <th>Qua</th>
+                <th>Qui</th>
+                <th>Sex</th>
+                <th>Total</th>
+                <th>Meta</th>
+              </tr>
+            </thead>
+            <tbody id="reportTableBody">
+              <tr>
+                <td>CAD</td>
+                <td>1</td>
+                <td>1</td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
+                <td><strong>4</strong></td>
+                <td>5</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <section id="produtos-section" class="content-section" style="display:none;">
+      <div class="panel glass">
+        <h2>Cadastro de Produtos</h2>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nome do Produto</label>
+            <input type="text" id="produtoNome" placeholder="Ex: Cela Completa">
+          </div>
+
+          <div class="form-group">
+            <label>Código</label>
+            <input type="text" id="produtoCodigo" placeholder="1900">
+          </div>
+
+          <div class="form-group">
+            <label>Tipo</label>
+            <select id="produtoTipo">
+              <option>Produto Final</option>
+              <option>Subnível</option>
+              <option>Matéria Prima</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Quantidade</label>
+            <input type="number" id="produtoQtd" placeholder="1">
+          </div>
+
+          <div class="form-group">
+            <label>Itens que compõem o produto \(códigos\)</label>
+            <input type="text" id="produtoComponentes" placeholder="1501,1502,1503,1504">
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn" onclick="adicionarProduto()">Cadastrar Produto</button>
+        </div>
+
+        <div class="report-table" style="margin-top:25px;">
+          <div style="overflow-x:auto;">
+        <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Produto</th>
+                <th>Tipo</th>
+                <th>Quantidade</th>
+                <th>Componentes</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaProdutos">
+              <tr>
+                <td>1900</td>
+                <td>Cela Completa</td>
+                <td>Produto Final</td>
+                <td>1</td>
+                <td>#1501 | #1502 | #1503 | #1504</td>
+              </tr>
+
+              <tr>
+                <td>1501</td>
+                <td>Parede com Janela</td>
+                <td>Subnível</td>
+                <td>1</td>
+                <td>#1400 | #1401 | #1402 | #1403</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="usuarios-section" class="content-section" style="display:none;">
+      <div class="panel glass">
+        <h2>Cadastro de Usuários</h2>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nome</label>
+            <input type="text" id="usuarioNome" placeholder="Nome do usuário">
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="usuarioEmail" placeholder="usuario@empresa.com">
+          </div>
+
+          <div class="form-group">
+            <label>Setor</label>
+            <select id="usuarioSetor">
+              <option>PCP</option>
+              <option>CAD</option>
+              <option>Qualidade</option>
+              <option>Serralheria</option>
+              <option>Montagem</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn" onclick="adicionarUsuario()">Cadastrar Usuário</button>
+
+        <div class="report-table" style="margin-top:25px;">
+          <div style="overflow-x:auto;">
+        <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Setor</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaUsuarios"></tbody>
+          </table>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="setores-section" class="content-section" style="display:none;">
+      <div class="panel glass">
+        <h2>Cadastro de Setores</h2>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nome do Setor</label>
+            <input type="text" id="setorNome" placeholder="Ex: Almoxarifado">
+          </div>
+
+          <div class="form-group">
+            <label>Responsabilidade</label>
+            <input type="text" id="setorFuncao" placeholder="Controle de estoque">
+          </div>
+        </div>
+
+        <button class="btn" onclick="adicionarSetor()">Cadastrar Setor</button>
+
+        <div class="sector-grid" id="listaSetores" style="margin-top:30px;"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+
+    const links = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.content-section');
+
+    links.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        links.forEach(item => item.classList.remove('active'));
+        this.classList.add('active');
+
+        const section = this.dataset.section;
+
+        sections.forEach(sec => {
+          sec.style.display = 'none';
+        });
+
+        document.getElementById(section + '-section').style.display = 'block';
+      });
+    });
+
+    function adicionarProduto() {
+      try {
+      const nome = document.getElementById('produtoNome').value;
+      const codigo = document.getElementById('produtoCodigo').value;
+      const tipo = document.getElementById('produtoTipo').value;
+      const qtd = document.getElementById('produtoQtd').value;
+      const componentes = document.getElementById('produtoComponentes').value;
+
+      if(!nome || !codigo) return;
+
+      let componentesFormatados = '-';
+
+      if(componentes){
+        componentesFormatados = componentes
+          .split(',')
+          .map(item => `#${item.trim()}`)
+          .join(' | ');
+      }
+
+      const tabela = document.getElementById('tabelaProdutos');
+
+      tabela.innerHTML += `
+        <tr>
+          <td>${codigo}</td>
+          <td>${nome}</td>
+          <td>${tipo}</td>
+          <td>${qtd}</td>
+          <td>${componentesFormatados}</td>
+        </tr>
+      `;
+
+      document.getElementById('produtoNome').value = '';
+      document.getElementById('produtoCodigo').value = '';
+      document.getElementById('produtoQtd').value = '';
+      document.getElementById('produtoComponentes').value = '';
+      } catch(error) {
+        alert('Erro ao cadastrar produto');
+      }
+    }
+
+    function adicionarUsuario() {
+      try {
+      const nome = document.getElementById('usuarioNome').value;
+      const email = document.getElementById('usuarioEmail').value;
+      const setor = document.getElementById('usuarioSetor').value;
+
+      if(!nome || !email) return;
+
+      const tabela = document.getElementById('tabelaUsuarios');
+
+      tabela.innerHTML += `
+        <tr>
+          <td>${nome}</td>
+          <td>${email}</td>
+          <td>${setor}</td>
+        </tr>
+      `;
+
+      document.getElementById('usuarioNome').value = '';
+      document.getElementById('usuarioEmail').value = '';
+      } catch(error) {
+        alert('Erro ao cadastrar usuário');
+      }
+    }
+
+    function adicionarSetor() {
+      try {
+      const nome = document.getElementById('setorNome').value;
+      const funcao = document.getElementById('setorFuncao').value;
+
+      if(!nome || !funcao) return;
+
+      const lista = document.getElementById('listaSetores');
+
+      lista.innerHTML += `
+        <div class="sector-card">
+          <h3>${nome}</h3>
+          <p>${funcao}</p>
+        </div>
+      `;
+
+      document.getElementById('setorNome').value = '';
+      document.getElementById('setorFuncao').value = '';
+      } catch(error) {
+        alert('Erro ao cadastrar setor');
+      }
+    }
+
+    const ctx = document.getElementById('productionChart');
+
+    new Chart(ctx, {
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: {
+              color: '#334155'
+            }
+          }
+        },
+        scales: {
+          y: {
+            ticks: {
+              color: '#64748b'
+            }
+          },
+          x: {
+            ticks: {
+              color: '#64748b'
+            }
+          }
+        }
+      },
+      type: 'bar',
+      data: {
+        labels: ['CAD', 'Serralheria', 'GRC', 'Montagem', 'ML', 'Qualidade'],
+        datasets: [{
+          label: 'Itens Produzidos',
+          data: [24, 18, 12, 15, 10, 8],
+          borderWidth: 1
+        }]
+      },
+      });
+  </script>
+
+</body>
+</html>
