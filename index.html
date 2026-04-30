@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DBN ERP Industrial - Edição e Composição com Produtos</title>
+<title>DBN ERP - Apontamento de Produção</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -58,6 +58,7 @@ table td{padding:14px;border-bottom:1px solid #f1f5f9;font-size:14px;}
 .component-row select{flex:2;padding:10px;border-radius:10px;border:1px solid var(--border);}
 .component-row input{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);}
 .component-row button{background:#dc2626;border:none;color:white;border-radius:10px;cursor:pointer;padding:10px;}
+.apontamento-card{border-left:4px solid #f97316; margin-bottom:15px; padding:15px; background:#fff7ed; border-radius:12px;}
 @media(max-width:900px){body{flex-direction:column;}.sidebar{width:100%;}}
 </style>
 </head>
@@ -85,15 +86,19 @@ table td{padding:14px;border-bottom:1px solid #f1f5f9;font-size:14px;}
 </div>
 
 <div class="main">
-    <div class="header"><div><h1>DBN Industrial ERP</h1><p>Gestão integrada de produção modular industrial</p></div></div>
+    <div class="header"><div><h1>DBN Industrial ERP</h1><p>Apontamento desde paredes até celas completas</p></div></div>
 
     <!-- DASHBOARD -->
     <section id="dashboard-section" class="content-section">
-        <div class="cards"><div class="card"><div class="card-title">Produção do Dia</div><div class="card-value">82%</div></div><div class="card"><div class="card-title">Ordens em aberto</div><div class="card-value">24</div></div><div class="card"><div class="card-title">Expedições</div><div class="card-value">12</div></div></div>
-        <div class="panel"><h2>Produção Semanal</h2><div class="chart-container"><canvas id="productionChart"></canvas></div></div>
+        <div class="cards">
+            <div class="card"><div class="card-title">Produção Hoje (Real)</div><div class="card-value" id="totalProduzidoHoje">0</div></div>
+            <div class="card"><div class="card-title">Celas Completas (Mês)</div><div class="card-value" id="totalCelasMes">0</div></div>
+            <div class="card"><div class="card-title">Paredes Produzidas</div><div class="card-value" id="totalParedes">0</div></div>
+        </div>
+        <div class="panel"><h2>Produção Semanal (Planejado vs Real)</h2><div class="chart-container"><canvas id="productionChart"></canvas></div></div>
     </section>
 
-    <!-- PRODUTOS COM EDIÇÃO E COMPOSIÇÃO VIA DROPDOWN -->
+    <!-- PRODUTOS (com edição e composição) -->
     <section id="produtos-section" class="content-section">
         <div class="panel">
             <h2>Cadastro / Edição de Produtos</h2>
@@ -123,28 +128,38 @@ table td{padding:14px;border-bottom:1px solid #f1f5f9;font-size:14px;}
         </div>
     </section>
 
-    <!-- USUÁRIOS -->
-    <section id="usuarios-section" class="content-section">
-        <div class="panel"><h2>Cadastro de Usuários</h2><div class="form-grid"><div class="form-group"><label>Nome</label><input type="text" id="usuarioNome"></div><div class="form-group"><label>Email</label><input type="email" id="usuarioEmail"></div><div class="form-group"><label>Setor</label><select id="usuarioSetor"><option>PCP</option><option>CAD</option><option>Montagem</option></select></div></div><button class="btn" onclick="adicionarUsuario()">Cadastrar Usuário</button><div style="overflow:auto;margin-top:25px;"><table><thead><tr><th>Nome</th><th>Email</th><th>Setor</th></tr></thead><tbody id="tabelaUsuarios"></tbody></table></div></div>
-    </section>
-
-    <!-- SETORES -->
+    <!-- USUÁRIOS e SETORES (mantido) -->
+    <section id="usuarios-section" class="content-section"><div class="panel"><h2>Cadastro de Usuários</h2><div class="form-grid"><div class="form-group"><label>Nome</label><input type="text" id="usuarioNome"></div><div class="form-group"><label>Email</label><input type="email" id="usuarioEmail"></div><div class="form-group"><label>Setor</label><select id="usuarioSetor"><option>PCP</option><option>CAD</option><option>Montagem</option></select></div></div><button class="btn" onclick="adicionarUsuario()">Cadastrar Usuário</button><div style="overflow:auto;margin-top:25px;"><table><thead><tr><th>Nome</th><th>Email</th><th>Setor</th></tr></thead><tbody id="tabelaUsuarios"></tbody></table></div></div></section>
     <section id="setores-section" class="content-section"><div class="panel"><h2>Cadastro de Setores</h2><div class="form-grid"><div class="form-group"><label>Nome Setor</label><input type="text" id="setorNome"></div><div class="form-group"><label>Responsabilidade</label><input type="text" id="setorFuncao"></div></div><button class="btn" onclick="adicionarSetor()">Cadastrar Setor</button><div class="sector-grid" id="listaSetores" style="margin-top:25px;"></div></div></section>
-
-    <!-- PRODUÇÃO -->
-    <section id="producao-section" class="content-section"><div class="panel"><h2>Controle de Produção</h2><table><thead><tr><th>Produto</th><th>Etapa</th><th>Setor</th><th>Status</th></tr></thead><tbody><tr><td>Parede Direita - 1503</td><td>Concretagem</td><td>CAD</td><td><span class="status andamento">Em andamento</span></td></tr></tbody></table></div></section>
-
-    <!-- RELATÓRIO DIÁRIO -->
+    <section id="producao-section" class="content-section"><div class="panel"><h2>Controle de Produção</h2><table><thead><tr><th>Produto</th><th>Etapa</th><th>Setor</th><th>Status</th></tr></thead><tbody><tr><td colspan="4">Utilize a seção Apontamentos para registrar a produção.</td></tr></tbody></table></div></section>
     <section id="relatorio-section" class="content-section"><div class="panel"><h2>Relatório Diário</h2><table><thead><tr><th>Setor</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Total</th></tr></thead><tbody><tr><td>CAD</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td><td>4</td></tr></tbody></table></div></section>
 
-    <!-- APONTAMENTOS -->
-    <section id="apontamentos-section" class="content-section"><div class="panel"><h2>Apontamento de Produção</h2><p style="margin-bottom:20px;color:#64748b;">Geração de QRCode e controle de fases produtivas.</p><div class="form-grid"><div class="form-group"><label>Nome Item</label><input type="text" id="apontamentoNome"></div><div class="form-group"><label>Código Item</label><input type="text" id="apontamentoCodigo"></div><div class="form-group"><label>Projeto</label><input type="text" id="apontamentoProjeto"></div></div><button class="btn" onclick="gerarApontamento()">Gerar QRCode</button><div id="listaApontamentos" style="margin-top:30px;"></div></div></section>
+    <!-- APONTAMENTO DE PRODUÇÃO (paredes a celas) -->
+    <section id="apontamentos-section" class="content-section">
+        <div class="panel">
+            <h2>📝 Apontamento de Produção</h2>
+            <p>Registre a produção de <strong>paredes, subconjuntos e celas completas</strong>. Os dados alimentam o dashboard e o cálculo de consumo.</p>
+            <div class="form-grid">
+                <div class="form-group"><label>Produto</label><select id="apontamentoProduto"></select></div>
+                <div class="form-group"><label>Quantidade Produzida</label><input type="number" id="apontamentoQtd" value="1" min="0.5" step="0.5"></div>
+                <div class="form-group"><label>Setor Responsável</label><select id="apontamentoSetor"><option>Montagem</option><option>CAD</option><option>Concretagem</option><option>Expedição</option></select></div>
+            </div>
+            <button class="btn" onclick="registrarApontamento()">✅ Registrar Produção</button>
+            <hr style="margin: 25px 0;">
+            <h3>📋 Histórico de Apontamentos</h3>
+            <div id="listaApontamentos" style="max-height: 300px; overflow-y: auto;"></div>
+            <div style="margin-top:20px;">
+                <h3>📊 Resumo da Produção (por produto)</h3>
+                <div id="resumoProducao" class="needs-grid"></div>
+            </div>
+        </div>
+    </section>
 
     <!-- PROGRAMAÇÃO -->
     <section id="programacao-section" class="content-section">
         <div class="panel">
             <h2>📅 Programação de Produção</h2>
-            <p>Registre a quantidade de Produtos Finais por data. O sistema calculará os insumos totais recursivamente.</p>
+            <p>Registre quantos produtos finais (celas, passarelas) devem ser produzidos por data.</p>
             <div class="form-grid">
                 <div class="form-group"><label>Data</label><input type="date" id="progData"></div>
                 <div class="form-group"><label>Produto Final / Parede</label><select id="progProduto"></select></div>
@@ -158,7 +173,7 @@ table td{padding:14px;border-bottom:1px solid #f1f5f9;font-size:14px;}
 </div>
 
 <script>
-// ======================== DADOS INICIAIS ========================
+// ======================== ESTRUTURA DE DADOS ========================
 let produtos = [
     { codigo: "1400", nome: "Concreto", categoria: "Insumo", unidade: "m³", composicao: [] },
     { codigo: "1401", nome: "Armação", categoria: "Insumo", unidade: "kg", composicao: [] },
@@ -174,21 +189,19 @@ let produtos = [
 ];
 
 let programacoes = [];
-let editandoCodigo = null; // código do produto em edição
+let apontamentos = []; // cada apontamento: { produtoCodigo, quantidade, setor, data, id }
 
-// ======================== FUNÇÕES DE COMPOSIÇÃO DINÂMICA ========================
+let editandoCodigo = null;
+
+// ======================== FUNÇÕES DE COMPOSIÇÃO ========================
 function adicionarLinhaComponente(componente = null) {
     const container = document.getElementById('componentesContainer');
-    const index = container.children.length;
     const div = document.createElement('div');
     div.className = 'component-row';
-    div.dataset.index = index;
-
     const select = document.createElement('select');
     select.style.flex = '2';
-    // Preencher com todos os produtos exceto o que está sendo editado (se houver)
     const produtosDisponiveis = produtos.filter(p => p.codigo !== editandoCodigo);
-    select.innerHTML = '<option value="">Selecione um produto</option>';
+    select.innerHTML = '<option value="">Selecione</option>';
     produtosDisponiveis.forEach(prod => {
         const option = document.createElement('option');
         option.value = prod.codigo;
@@ -196,32 +209,19 @@ function adicionarLinhaComponente(componente = null) {
         if (componente && componente.codigo === prod.codigo) option.selected = true;
         select.appendChild(option);
     });
-
     const qtdInput = document.createElement('input');
     qtdInput.type = 'number';
     qtdInput.step = 'any';
     qtdInput.placeholder = 'Quantidade';
     qtdInput.value = componente ? componente.qtd : '1';
     qtdInput.style.flex = '1';
-
     const removeBtn = document.createElement('button');
     removeBtn.textContent = '✖';
     removeBtn.onclick = () => div.remove();
-
     div.appendChild(select);
     div.appendChild(qtdInput);
     div.appendChild(removeBtn);
     container.appendChild(div);
-}
-
-function carregarComponentesNoFormulario(composicao) {
-    const container = document.getElementById('componentesContainer');
-    container.innerHTML = '';
-    if (composicao && composicao.length) {
-        composicao.forEach(comp => adicionarLinhaComponente(comp));
-    } else {
-        adicionarLinhaComponente(); // linha vazia
-    }
 }
 
 function obterComposicaoDoFormulario() {
@@ -232,74 +232,9 @@ function obterComposicaoDoFormulario() {
         const qtdInput = linha.querySelector('input');
         const codigo = select.value;
         const qtd = parseFloat(qtdInput.value);
-        if (codigo && !isNaN(qtd) && qtd > 0) {
-            composicao.push({ codigo, qtd });
-        }
+        if (codigo && !isNaN(qtd) && qtd > 0) composicao.push({ codigo, qtd });
     }
     return composicao;
-}
-
-// ======================== CRUD PRODUTOS COM EDIÇÃO ========================
-function salvarProduto() {
-    const nome = document.getElementById('produtoNome').value.trim();
-    const codigo = document.getElementById('produtoCodigo').value.trim();
-    const categoria = document.getElementById('produtoCategoria').value;
-    const unidade = document.getElementById('produtoUnidade').value.trim();
-    const composicao = obterComposicaoDoFormulario();
-
-    if (!nome || !codigo) { alert("Nome e código são obrigatórios"); return; }
-    if (categoria !== "Insumo" && composicao.length === 0) { alert("Produtos não-insumo precisam ter pelo menos um componente."); return; }
-    
-    // Verificar se o código já existe (exceto se estiver editando o mesmo)
-    const existe = produtos.some(p => p.codigo === codigo && p.codigo !== editandoCodigo);
-    if (existe) { alert("Código já existe em outro produto."); return; }
-
-    // Validar que todos os componentes existem (já estão no dropdown, mas segurança)
-    for (let comp of composicao) {
-        if (!produtos.some(p => p.codigo === comp.codigo)) {
-            alert(`Componente ${comp.codigo} não encontrado no sistema.`);
-            return;
-        }
-        if (comp.codigo === codigo) {
-            alert("Um produto não pode ter a si mesmo como componente.");
-            return;
-        }
-    }
-
-    const novoProduto = { codigo, nome, categoria, unidade: unidade || "UN", composicao };
-
-    if (editandoCodigo) {
-        // Edição: substituir o produto
-        const index = produtos.findIndex(p => p.codigo === editandoCodigo);
-        if (index !== -1) produtos[index] = novoProduto;
-        // Atualizar também as composições de outros produtos que possam referenciar este? (mantemos o código, ok)
-        editandoCodigo = null;
-        document.getElementById('btnCancelar').style.display = 'none';
-        alert("Produto atualizado com sucesso!");
-    } else {
-        produtos.push(novoProduto);
-        alert("Produto cadastrado com sucesso!");
-    }
-
-    cancelarEdicao(); // limpa formulário e recarrega tabela
-    atualizarTabelaProdutos();
-    popularSelectProdutosProgramacao();
-    atualizarTabelaProgramacao();
-    atualizarInterfaceNecessidades();
-}
-
-function editarProduto(codigo) {
-    const produto = produtos.find(p => p.codigo === codigo);
-    if (!produto) return;
-    editandoCodigo = codigo;
-    document.getElementById('produtoNome').value = produto.nome;
-    document.getElementById('produtoCodigo').value = produto.codigo;
-    document.getElementById('produtoCategoria').value = produto.categoria;
-    document.getElementById('produtoUnidade').value = produto.unidade;
-    carregarComponentesNoFormulario(produto.composicao);
-    document.getElementById('btnCancelar').style.display = 'inline-block';
-    // Rolar para o formulário
-    document.getElementById('formProduto').scrollIntoView({ behavior: 'smooth' });
 }
 
 function cancelarEdicao() {
@@ -309,204 +244,343 @@ function cancelarEdicao() {
     document.getElementById('produtoCategoria').value = 'Insumo';
     document.getElementById('produtoUnidade').value = '';
     document.getElementById('componentesContainer').innerHTML = '';
-    adicionarLinhaComponente(); // linha inicial vazia
+    adicionarLinhaComponente();
     document.getElementById('btnCancelar').style.display = 'none';
 }
 
-function removerProduto(codigo) {
-    // Verificar dependências
-    const usadoEm = produtos.filter(p => p.composicao && p.composicao.some(comp => comp.codigo === codigo));
-    if (usadoEm.length > 0) {
-        alert(`Não é possível remover "${codigo}" pois é utilizado em: ${usadoEm.map(p => p.nome).join(', ')}`);
-        return;
+function salvarProduto() {
+    const nome = document.getElementById('produtoNome').value.trim();
+    const codigo = document.getElementById('produtoCodigo').value.trim();
+    const categoria = document.getElementById('produtoCategoria').value;
+    const unidade = document.getElementById('produtoUnidade').value.trim();
+    const composicao = obterComposicaoDoFormulario();
+
+    if (!nome || !codigo) { alert("Nome e código obrigatórios"); return; }
+    if (categoria !== "Insumo" && composicao.length === 0) { alert("Produto não-insumo precisa de composição."); return; }
+
+    const existe = produtos.some(p => p.codigo === codigo && p.codigo !== editandoCodigo);
+    if (existe) { alert("Código já existe."); return; }
+
+    for (let comp of composicao) {
+        if (!produtos.some(p => p.codigo === comp.codigo)) { alert(`Componente ${comp.codigo} não encontrado.`); return; }
+        if (comp.codigo === codigo) { alert("Auto-referência não permitida."); return; }
     }
+
+    const novoProduto = { codigo, nome, categoria, unidade: unidade || "UN", composicao };
+    if (editandoCodigo) {
+        const idx = produtos.findIndex(p => p.codigo === editandoCodigo);
+        if (idx !== -1) produtos[idx] = novoProduto;
+        editandoCodigo = null;
+        alert("Produto atualizado.");
+    } else {
+        produtos.push(novoProduto);
+        alert("Produto cadastrado.");
+    }
+    cancelarEdicao();
+    atualizarTabelaProdutos();
+    popularSelectsDinamicos();
+    atualizarTabelaProgramacao();
+    atualizarInterfaceNecessidades();
+}
+
+function removerProduto(codigo) {
+    const usadoEm = produtos.filter(p => p.composicao && p.composicao.some(comp => comp.codigo === codigo));
+    if (usadoEm.length) { alert(`Usado em: ${usadoEm.map(p=>p.nome).join(', ')}`); return; }
     produtos = produtos.filter(p => p.codigo !== codigo);
-    // Remover das programações
     programacoes = programacoes.filter(prog => prog.produtoCodigo !== codigo);
     if (editandoCodigo === codigo) cancelarEdicao();
     atualizarTabelaProdutos();
-    popularSelectProdutosProgramacao();
+    popularSelectsDinamicos();
     atualizarTabelaProgramacao();
     atualizarInterfaceNecessidades();
-    alert(`Produto ${codigo} removido.`);
 }
 
 function atualizarTabelaProdutos() {
     const tbody = document.getElementById('tabelaProdutos');
     tbody.innerHTML = '';
     produtos.forEach(prod => {
-        const compStr = prod.composicao.map(c => `${c.codigo}:${c.qtd}`).join(', ') || '-';
+        const compStr = prod.composicao.map(c=>`${c.codigo}:${c.qtd}`).join(', ') || '-';
         const row = tbody.insertRow();
         row.insertCell(0).innerText = prod.codigo;
         row.insertCell(1).innerText = prod.nome;
         row.insertCell(2).innerText = prod.categoria;
         row.insertCell(3).innerText = prod.unidade;
         row.insertCell(4).innerText = compStr;
-        const acaoCell = row.insertCell(5);
-        const btnEditar = document.createElement('button');
-        btnEditar.innerText = 'Editar';
-        btnEditar.className = 'btn-small';
-        btnEditar.style.background = '#3b82f6';
-        btnEditar.style.marginRight = '8px';
-        btnEditar.onclick = () => editarProduto(prod.codigo);
-        const btnRemover = document.createElement('button');
-        btnRemover.innerText = 'Remover';
-        btnRemover.className = 'btn-small btn-danger';
-        btnRemover.style.background = '#dc2626';
-        btnRemover.onclick = () => removerProduto(prod.codigo);
-        acaoCell.appendChild(btnEditar);
-        acaoCell.appendChild(btnRemover);
+        const acao = row.insertCell(5);
+        const btnEdit = document.createElement('button'); btnEdit.innerText='Editar'; btnEdit.className='btn-small'; btnEdit.style.background='#3b82f6'; btnEdit.onclick=()=>editarProduto(prod.codigo);
+        const btnDel = document.createElement('button'); btnDel.innerText='Remover'; btnDel.className='btn-small btn-danger'; btnDel.style.background='#dc2626'; btnDel.onclick=()=>removerProduto(prod.codigo);
+        acao.appendChild(btnEdit); acao.appendChild(btnDel);
     });
 }
 
-// ======================== FUNÇÕES DE CÁLCULO RECURSIVO ========================
-function expandirNecessidades(produtoCodigo, quantidade, mapaInsumos = new Map()) {
+function editarProduto(codigo) {
+    const prod = produtos.find(p=>p.codigo===codigo);
+    if(!prod) return;
+    editandoCodigo = codigo;
+    document.getElementById('produtoNome').value = prod.nome;
+    document.getElementById('produtoCodigo').value = prod.codigo;
+    document.getElementById('produtoCategoria').value = prod.categoria;
+    document.getElementById('produtoUnidade').value = prod.unidade;
+    document.getElementById('componentesContainer').innerHTML = '';
+    if(prod.composicao.length) prod.composicao.forEach(c=>adicionarLinhaComponente(c));
+    else adicionarLinhaComponente();
+    document.getElementById('btnCancelar').style.display = 'inline-block';
+    document.getElementById('formProduto').scrollIntoView({behavior:'smooth'});
+}
+
+// ======================== APONTAMENTO DE PRODUÇÃO ========================
+function registrarApontamento() {
+    const produtoCodigo = document.getElementById('apontamentoProduto').value;
+    const quantidade = parseFloat(document.getElementById('apontamentoQtd').value);
+    const setor = document.getElementById('apontamentoSetor').value;
+    if (!produtoCodigo || !quantidade || quantidade <= 0) { alert("Selecione um produto e quantidade válida."); return; }
     const produto = produtos.find(p => p.codigo === produtoCodigo);
-    if (!produto) return mapaInsumos;
-    if (produto.categoria === "Insumo") {
-        let atual = mapaInsumos.get(produtoCodigo) || 0;
-        mapaInsumos.set(produtoCodigo, atual + quantidade);
-        return mapaInsumos;
+    if (!produto || (produto.categoria !== "Parede" && produto.categoria !== "ProdutoFinal")) {
+        alert("Só é permitido apontar produção de Paredes ou Produtos Finais.");
+        return;
     }
-    if (produto.composicao && produto.composicao.length) {
-        for (let comp of produto.composicao) {
-            expandirNecessidades(comp.codigo, comp.qtd * quantidade, mapaInsumos);
-        }
+    const agora = new Date();
+    const dataStr = agora.toLocaleString('pt-BR');
+    const id = Date.now();
+    apontamentos.push({ produtoCodigo, quantidade, setor, data: dataStr, id, produtoNome: produto.nome });
+    atualizarListaApontamentos();
+    atualizarResumoProducao();
+    atualizarDashboardStats();
+    
+    // Verifica se existe programação para hoje
+    const hoje = agora.toISOString().slice(0,10);
+    const progHoje = programacoes.filter(p => p.data === hoje && p.produtoCodigo === produtoCodigo);
+    const totalPlanejado = progHoje.reduce((acc, p) => acc + p.quantidade, 0);
+    const totalProduzido = apontamentos.filter(a => a.produtoCodigo === produtoCodigo && a.data.startsWith(hoje.slice(0,10))).reduce((acc,a)=>acc+a.quantidade,0);
+    if(totalPlanejado > 0 && totalProduzido > totalPlanejado) {
+        alert(`⚠️ Atenção: a produção de ${produto.nome} (${totalProduzido} unidades) ultrapassou o planejado para hoje (${totalPlanejado}).`);
     }
-    return mapaInsumos;
+    document.getElementById('apontamentoQtd').value = '1';
+}
+
+function atualizarListaApontamentos() {
+    const container = document.getElementById('listaApontamentos');
+    if(apontamentos.length === 0) {
+        container.innerHTML = '<div class="apontamento-card">Nenhum apontamento registrado ainda.</div>';
+        return;
+    }
+    container.innerHTML = '';
+    apontamentos.slice().reverse().forEach(apt => {
+        const div = document.createElement('div');
+        div.className = 'apontamento-card';
+        div.innerHTML = `
+            <strong>${apt.produtoNome} (${apt.produtoCodigo})</strong> - ${apt.quantidade} un<br>
+            Setor: ${apt.setor} | Data: ${apt.data}<br>
+            <button class="btn-small btn-danger" onclick="cancelarApontamento(${apt.id})" style="margin-top:5px;">Cancelar</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function cancelarApontamento(id) {
+    if(confirm("Cancelar este apontamento?")) {
+        apontamentos = apontamentos.filter(a => a.id !== id);
+        atualizarListaApontamentos();
+        atualizarResumoProducao();
+        atualizarDashboardStats();
+    }
+}
+
+function atualizarResumoProducao() {
+    const resumo = {};
+    for (let apt of apontamentos) {
+        const chave = apt.produtoCodigo;
+        if (!resumo[chave]) resumo[chave] = { nome: apt.produtoNome, quantidade: 0 };
+        resumo[chave].quantidade += apt.quantidade;
+    }
+    const container = document.getElementById('resumoProducao');
+    if(Object.keys(resumo).length===0) {
+        container.innerHTML = '<div class="needs-item">Nenhuma produção registrada.</div>';
+        return;
+    }
+    container.innerHTML = '';
+    for (let cod in resumo) {
+        const item = resumo[cod];
+        const prod = produtos.find(p=>p.codigo===cod);
+        container.innerHTML += `<div class="needs-item"><span>${item.nome} (${cod})</span><span>${item.quantidade} ${prod ? prod.unidade : 'un'}</span></div>`;
+    }
+}
+
+function atualizarDashboardStats() {
+    const hoje = new Date().toISOString().slice(0,10);
+    const totalHoje = apontamentos.filter(a => a.data.startsWith(hoje)).reduce((acc,a)=>acc+a.quantidade,0);
+    document.getElementById('totalProduzidoHoje').innerText = totalHoje;
+    const celas = apontamentos.filter(a => a.produtoCodigo === '1900' || a.produtoCodigo === '1901').reduce((acc,a)=>acc+a.quantidade,0);
+    document.getElementById('totalCelasMes').innerText = celas;
+    const paredes = apontamentos.filter(a => a.produtoCodigo.startsWith('15')).reduce((acc,a)=>acc+a.quantidade,0);
+    document.getElementById('totalParedes').innerText = paredes;
+    // Atualizar gráfico comparativo (planejado vs real da semana)
+    atualizarGraficoComparativo();
+}
+
+function atualizarGraficoComparativo() {
+    const canvas = document.getElementById('productionChart');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    // Produtos principais (ex: Cela completa, Passarela)
+    const produtosAlvo = ['1900','1901'];
+    const labels = produtosAlvo.map(cod => produtos.find(p=>p.codigo===cod)?.nome || cod);
+    const planejado = produtosAlvo.map(cod => {
+        const total = programacoes.reduce((acc, p) => p.produtoCodigo === cod ? acc + p.quantidade : acc, 0);
+        return total;
+    });
+    const realizado = produtosAlvo.map(cod => apontamentos.filter(a=>a.produtoCodigo===cod).reduce((acc,a)=>acc+a.quantidade,0));
+    if(window.prodChart) window.prodChart.destroy();
+    window.prodChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets: [
+            { label: 'Planejado (programação)', data: planejado, backgroundColor: '#f97316', borderRadius: 8 },
+            { label: 'Realizado (apontado)', data: realizado, backgroundColor: '#16a34a', borderRadius: 8 }
+        ]},
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, title: { display: true, text: 'Quantidade' } } } }
+    });
+}
+
+// ======================== PROGRAMAÇÃO E CÁLCULO DE INSUMOS ========================
+function expandirNecessidades(produtoCodigo, quantidade, mapa = new Map()) {
+    const prod = produtos.find(p=>p.codigo===produtoCodigo);
+    if(!prod) return mapa;
+    if(prod.categoria === "Insumo") {
+        mapa.set(produtoCodigo, (mapa.get(produtoCodigo)||0) + quantidade);
+        return mapa;
+    }
+    if(prod.composicao) {
+        for(let comp of prod.composicao) expandirNecessidades(comp.codigo, comp.qtd * quantidade, mapa);
+    }
+    return mapa;
 }
 
 function calcularNecessidadesTotais() {
-    const necessidadeMap = new Map();
-    for (let prog of programacoes) {
-        const produto = produtos.find(p => p.codigo === prog.produtoCodigo);
-        if (produto && (produto.categoria === "ProdutoFinal" || produto.categoria === "Parede")) {
-            expandirNecessidades(prog.produtoCodigo, prog.quantidade, necessidadeMap);
-        } else if (produto && produto.categoria === "Insumo") {
-            let atual = necessidadeMap.get(prog.produtoCodigo) || 0;
-            necessidadeMap.set(prog.produtoCodigo, atual + prog.quantidade);
-        }
+    const mapa = new Map();
+    for(let prog of programacoes) {
+        const prod = produtos.find(p=>p.codigo===prog.produtoCodigo);
+        if(prod && (prod.categoria==="ProdutoFinal"||prod.categoria==="Parede"))
+            expandirNecessidades(prog.produtoCodigo, prog.quantidade, mapa);
+        else if(prod && prod.categoria==="Insumo")
+            mapa.set(prog.produtoCodigo, (mapa.get(prog.produtoCodigo)||0)+prog.quantidade);
     }
-    return necessidadeMap;
+    return mapa;
 }
 
 function atualizarInterfaceNecessidades() {
     const needsMap = calcularNecessidadesTotais();
     const container = document.getElementById('needsContainer');
     const needsDiv = document.getElementById('needsList');
-    if (programacoes.length === 0) { container.style.display = 'none'; return; }
-    container.style.display = 'block';
-    needsDiv.innerHTML = '';
-    const insumos = Array.from(needsMap.entries())
-        .filter(([cod]) => { const p = produtos.find(prod => prod.codigo === cod); return p && p.categoria === "Insumo"; })
-        .sort((a,b) => a[0].localeCompare(b[0]));
-    if (insumos.length === 0) { needsDiv.innerHTML = '<div class="needs-item">Nenhum insumo necessário.</div>'; return; }
-    for (let [cod, qtd] of insumos) {
-        const produto = produtos.find(p => p.codigo === cod);
-        const unidade = produto ? produto.unidade : '';
-        needsDiv.innerHTML += `<div class="needs-item"><span>${produto?.nome || cod} (${cod})</span><span>${qtd.toFixed(2)} ${unidade}</span></div>`;
+    if(programacoes.length===0) { container.style.display='none'; return; }
+    container.style.display='block';
+    needsDiv.innerHTML='';
+    const insumos = Array.from(needsMap.entries()).filter(([cod])=>produtos.find(p=>p.codigo===cod && p.categoria==="Insumo"));
+    if(insumos.length===0) { needsDiv.innerHTML='<div class="needs-item">Nenhum insumo necessário.</div>'; return; }
+    for(let [cod,qtd] of insumos) {
+        const prod = produtos.find(p=>p.codigo===cod);
+        needsDiv.innerHTML += `<div class="needs-item"><span>${prod?.nome||cod} (${cod})</span><span>${qtd.toFixed(2)} ${prod?.unidade||''}</span></div>`;
     }
 }
 
-// ======================== PROGRAMAÇÃO ========================
 function adicionarProgramacao() {
     const data = document.getElementById('progData').value;
     const produtoCodigo = document.getElementById('progProduto').value;
     const quantidade = parseFloat(document.getElementById('progQuantidade').value);
-    if (!data || !produtoCodigo || !quantidade || quantidade <= 0) { alert("Preencha data, produto e quantidade."); return; }
-    const produto = produtos.find(p => p.codigo === produtoCodigo);
-    if (!produto || (produto.categoria !== "ProdutoFinal" && produto.categoria !== "Parede")) { alert("Programação permitida apenas para Produtos Finais ou Paredes."); return; }
+    if(!data || !produtoCodigo || !quantidade) { alert("Preencha todos os campos."); return; }
+    const prod = produtos.find(p=>p.codigo===produtoCodigo);
+    if(!prod || (prod.categoria!=="ProdutoFinal" && prod.categoria!=="Parede")) { alert("Programar apenas Produtos Finais ou Paredes."); return; }
     programacoes.push({ data, produtoCodigo, quantidade });
     atualizarTabelaProgramacao();
     atualizarInterfaceNecessidades();
-    document.getElementById('progData').value = '';
-    document.getElementById('progQuantidade').value = '1';
+    atualizarGraficoComparativo();
 }
 
-function removerProgramacao(index) { programacoes.splice(index, 1); atualizarTabelaProgramacao(); atualizarInterfaceNecessidades(); }
+function removerProgramacao(idx) { programacoes.splice(idx,1); atualizarTabelaProgramacao(); atualizarInterfaceNecessidades(); atualizarGraficoComparativo(); }
 
 function atualizarTabelaProgramacao() {
     const tbody = document.getElementById('tabelaProgramacao');
-    tbody.innerHTML = '';
-    programacoes.forEach((prog, idx) => {
-        const produto = produtos.find(p => p.codigo === prog.produtoCodigo);
-        const nomeProd = produto ? produto.nome : prog.produtoCodigo;
+    tbody.innerHTML='';
+    programacoes.forEach((p,idx)=>{
+        const prod = produtos.find(pr=>pr.codigo===p.produtoCodigo);
         const row = tbody.insertRow();
-        row.insertCell(0).innerText = prog.data;
-        row.insertCell(1).innerText = `${nomeProd} (${prog.produtoCodigo})`;
-        row.insertCell(2).innerText = prog.quantidade;
-        const btnCell = row.insertCell(3);
-        const btn = document.createElement('button');
-        btn.innerText = 'Remover';
-        btn.className = 'remover-btn';
-        btn.onclick = () => removerProgramacao(idx);
+        row.insertCell(0).innerText=p.data;
+        row.insertCell(1).innerText=`${prod?.nome||p.produtoCodigo} (${p.produtoCodigo})`;
+        row.insertCell(2).innerText=p.quantidade;
+        const btnCell=row.insertCell(3);
+        const btn=document.createElement('button'); btn.innerText='Remover'; btn.className='remover-btn'; btn.onclick=()=>removerProgramacao(idx);
         btnCell.appendChild(btn);
     });
 }
 
-function popularSelectProdutosProgramacao() {
-    const select = document.getElementById('progProduto');
-    select.innerHTML = '';
-    const produtosFinais = produtos.filter(p => p.categoria === 'ProdutoFinal' || p.categoria === 'Parede');
-    produtosFinais.forEach(p => { const option = document.createElement('option'); option.value = p.codigo; option.innerText = `${p.nome} (${p.codigo}) - ${p.categoria}`; select.appendChild(option); });
+function popularSelectsDinamicos() {
+    const selectProdApontamento = document.getElementById('apontamentoProduto');
+    const selectProg = document.getElementById('progProduto');
+    if(selectProdApontamento) {
+        selectProdApontamento.innerHTML = '<option value="">Selecione...</option>';
+        const apontaveis = produtos.filter(p => p.categoria === 'Parede' || p.categoria === 'ProdutoFinal');
+        apontaveis.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.codigo;
+            opt.innerText = `${p.nome} (${p.codigo}) - ${p.categoria}`;
+            selectProdApontamento.appendChild(opt);
+        });
+    }
+    if(selectProg) {
+        selectProg.innerHTML = '';
+        const viaveis = produtos.filter(p => p.categoria === 'ProdutoFinal' || p.categoria === 'Parede');
+        viaveis.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.codigo;
+            opt.innerText = `${p.nome} (${p.codigo}) - ${p.categoria}`;
+            selectProg.appendChild(opt);
+        });
+    }
 }
 
-// ======================== DEMAIS FUNÇÕES ========================
+// ======================== FUNÇÕES ADICIONAIS ========================
 window.adicionarUsuario = function(){
     const nome = document.getElementById('usuarioNome').value, email = document.getElementById('usuarioEmail').value, setor = document.getElementById('usuarioSetor').value;
-    if(!nome || !email) return;
-    document.getElementById('tabelaUsuarios').innerHTML += `<tr><td>${nome}</td><td>${email}</td><td>${setor}</td></tr>`;
-    document.getElementById('usuarioNome').value = ''; document.getElementById('usuarioEmail').value = '';
+    if(nome && email) document.getElementById('tabelaUsuarios').innerHTML += `<tr><td>${nome}</td><td>${email}</td><td>${setor}</td></tr>`;
+    document.getElementById('usuarioNome').value=''; document.getElementById('usuarioEmail').value='';
 }
 window.adicionarSetor = function(){
     const nome = document.getElementById('setorNome').value, funcao = document.getElementById('setorFuncao').value;
-    if(!nome || !funcao) return;
-    document.getElementById('listaSetores').innerHTML += `<div class="sector-card"><h3>${nome}</h3><p>${funcao}</p></div>`;
-    document.getElementById('setorNome').value = ''; document.getElementById('setorFuncao').value = '';
+    if(nome && funcao) document.getElementById('listaSetores').innerHTML += `<div class="sector-card"><h3>${nome}</h3><p>${funcao}</p></div>`;
+    document.getElementById('setorNome').value=''; document.getElementById('setorFuncao').value='';
 }
-window.gerarApontamento = function(){
-    const nome = document.getElementById('apontamentoNome').value, codigo = document.getElementById('apontamentoCodigo').value, projeto = document.getElementById('apontamentoProjeto').value;
-    if(!nome || !codigo){ alert('Preencha nome e código'); return; }
-    const identificador = `${codigo}-${Date.now()}`;
-    const container = document.getElementById('listaApontamentos');
-    const card = document.createElement('div'); card.className = 'panel'; card.style.marginBottom = '25px';
-    card.innerHTML = `<div style="display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;"><div><h3>${nome}</h3><p><strong>Código:</strong> ${codigo}</p><p><strong>Projeto:</strong> ${projeto}</p><p><strong>ID:</strong> ${identificador}</p><div style="margin-top:20px;"><div><span>Iniciando</span><select onchange="alterarStatusFase(this)"><option>Pendente</option><option>Em andamento</option><option>Finalizado</option></select></div><div><span>Em andamento</span><select onchange="alterarStatusFase(this)"><option>Pendente</option><option>Em andamento</option><option>Finalizado</option></select></div><div><span>Finalizado</span><select onchange="alterarStatusFase(this)"><option>Pendente</option><option>Em andamento</option><option>Finalizado</option></select></div></div></div><div><div id="qrcode-${identificador}" style="background:white;padding:15px;border-radius:16px;"></div></div></div>`;
-    container.prepend(card);
-    new QRCode(document.getElementById(`qrcode-${identificador}`), { text: `Item:${nome}|Código:${codigo}|Projeto:${projeto}|ID:${identificador}`, width: 180, height: 180 });
-    document.getElementById('apontamentoNome').value = ''; document.getElementById('apontamentoCodigo').value = ''; document.getElementById('apontamentoProjeto').value = '';
-}
-window.alterarStatusFase = function(select){
-    const valor = select.value;
-    if(valor === 'Finalizado'){ select.style.background = '#dcfce7'; select.style.color = '#166534'; }
-    else if(valor === 'Em andamento'){ select.style.background = '#dbeafe'; select.style.color = '#1d4ed8'; }
-    else{ select.style.background = '#f1f5f9'; select.style.color = '#334155'; }
-}
+window.calcularNecessidades = function(){ atualizarInterfaceNecessidades(); };
 
 // ======================== INICIALIZAÇÃO ========================
 document.addEventListener('DOMContentLoaded', () => {
+    // Navegação
     const links = document.querySelectorAll('.nav-link');
     const sections = document.querySelectorAll('.content-section');
-    function hideAllSections(){ sections.forEach(section => section.style.display = 'none'); }
-    function removeActiveLinks(){ links.forEach(link => link.classList.remove('active')); }
-    links.forEach(link => {
-        link.addEventListener('click', function(e){
+    function hideAll(){ sections.forEach(s=>s.style.display='none'); }
+    function removeActive(){ links.forEach(l=>l.classList.remove('active')); }
+    links.forEach(link=>{
+        link.addEventListener('click', (e)=>{
             e.preventDefault();
-            const sectionName = this.dataset.section;
-            const targetSection = document.getElementById(sectionName + '-section');
-            if(!targetSection) return;
-            hideAllSections(); removeActiveLinks();
-            targetSection.style.display = 'block';
-            this.classList.add('active');
-            if(sectionName === 'programacao') atualizarInterfaceNecessidades();
+            const sectionName = link.dataset.section;
+            const target = document.getElementById(sectionName+'-section');
+            if(target) { hideAll(); removeActive(); target.style.display='block'; link.classList.add('active'); }
+            if(sectionName==='apontamentos') atualizarListaApontamentos();
+            if(sectionName==='dashboard') atualizarDashboardStats();
         });
     });
-    cancelarEdicao(); // inicializa formulário com uma linha vazia
+    cancelarEdicao();
     atualizarTabelaProdutos();
-    popularSelectProdutosProgramacao();
+    popularSelectsDinamicos();
     atualizarTabelaProgramacao();
-    const chartCanvas = document.getElementById('productionChart');
-    if(chartCanvas){ new Chart(chartCanvas, { type:'bar', data:{ labels:['CAD','Serralheria','GRC','Montagem','Expedição'], datasets:[{ label:'Produção semanal', data:[12,19,8,15,10], borderRadius:8 }] }, options:{ responsive:true, maintainAspectRatio:false } }); }
-    window.calcularNecessidades = function(){ atualizarInterfaceNecessidades(); };
+    atualizarInterfaceNecessidades();
+    atualizarListaApontamentos();
+    atualizarResumoProducao();
+    atualizarDashboardStats();
+    // gráfico inicial
+    const canvas = document.getElementById('productionChart');
+    if(canvas) {
+        window.prodChart = new Chart(canvas, { type:'bar', data:{ labels:[], datasets:[] }, options:{ responsive:true, maintainAspectRatio:false } });
+        atualizarGraficoComparativo();
+    }
 });
 </script>
 </body>
