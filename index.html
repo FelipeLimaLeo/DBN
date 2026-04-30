@@ -1,4 +1,815 @@
+
+---
 <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DBN ERP Industrial</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --primary:#f97316;
+    --primary-dark:#ea580c;
+    --dark:#0f172a;
+    --dark-2:#1e293b;
+    --light:#f8fafc;
+    --border:#e2e8f0;
+    --gray:#64748b;
+    --success:#16a34a;
+    --danger:#dc2626;
+    --shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+body{
+    font-family:'Poppins',sans-serif;
+    background:linear-gradient(135deg,#f1f5f9 0%,#fff7ed 100%);
+    display:flex;
+    min-height:100vh;
+}
+
+.sidebar{
+    width:280px;
+    background:linear-gradient(180deg,#1e293b 0%,#0f172a 100%);
+    padding:25px;
+    color:white;
+}
+
+.logo{
+    margin-bottom:40px;
+}
+
+.menu-title{
+    font-size:12px;
+    color:#94a3b8;
+    margin:25px 0 10px;
+    text-transform:uppercase;
+}
+
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.menu a{
+    text-decoration:none;
+    color:#e2e8f0;
+    padding:14px;
+    border-radius:12px;
+    transition:0.3s;
+    font-size:14px;
+}
+
+.menu a:hover,
+.menu a.active{
+    background:linear-gradient(135deg,#f97316,#ea580c);
+    color:white;
+}
+
+.main{
+    flex:1;
+    padding:30px;
+    overflow:auto;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.header h1{
+    font-size:32px;
+    color:#0f172a;
+}
+
+.header p{
+    color:#64748b;
+    margin-top:5px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:rgba(255,255,255,0.9);
+    border:1px solid rgba(255,255,255,0.5);
+    backdrop-filter:blur(12px);
+    padding:25px;
+    border-radius:20px;
+    box-shadow:var(--shadow);
+}
+
+.card-title{
+    font-size:14px;
+    color:#64748b;
+    margin-bottom:10px;
+}
+
+.card-value{
+    font-size:30px;
+    font-weight:700;
+    color:#0f172a;
+}
+
+.panel{
+    background:rgba(255,255,255,0.92);
+    border:1px solid var(--border);
+    border-radius:24px;
+    padding:25px;
+    margin-bottom:25px;
+    box-shadow:var(--shadow);
+}
+
+.panel h2{
+    margin-bottom:20px;
+    color:#0f172a;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:18px;
+    margin-bottom:20px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.form-group label{
+    font-size:13px;
+    font-weight:600;
+    color:#475569;
+}
+
+.form-group input,
+.form-group select{
+    padding:14px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    font-family:'Poppins',sans-serif;
+}
+
+.btn{
+    border:none;
+    background:linear-gradient(135deg,#f97316,#ea580c);
+    color:white;
+    padding:14px 22px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.btn:hover{
+    opacity:0.95;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+table th{
+    background:#fff7ed;
+    color:#ea580c;
+    text-align:left;
+    padding:14px;
+    font-size:13px;
+}
+
+table td{
+    padding:14px;
+    border-bottom:1px solid #f1f5f9;
+    font-size:14px;
+}
+
+.status{
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:600;
+}
+
+.andamento{
+    background:#dbeafe;
+    color:#1d4ed8;
+}
+
+.finalizado{
+    background:#dcfce7;
+    color:#15803d;
+}
+
+.sector-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.sector-card{
+    background:#0f172a;
+    color:white;
+    padding:20px;
+    border-radius:20px;
+}
+
+.content-section{
+    display:none;
+}
+
+#dashboard-section{
+    display:block;
+}
+
+.chart-container{
+    height:320px;
+}
+
+@media(max-width:900px){
+
+    body{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+    }
+
+}
+
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+
+    <div class="logo">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <div style="background:#f97316;width:58px;height:58px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;">
+                DBN
+            </div>
+
+            <div>
+                <div style="font-size:22px;font-weight:700;">DBN ERP</div>
+                <div style="font-size:11px;color:#cbd5e1;">SISTEMAS CONSTRUTIVOS</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-title">Principal</div>
+
+    <div class="menu">
+        <a href="#" class="nav-link active" data-section="dashboard">Dashboard</a>
+        <a href="#" class="nav-link" data-section="producao">Produção</a>
+        <a href="#" class="nav-link" data-section="relatorio">Relatório Diário</a>
+        <a href="#" class="nav-link" data-section="apontamentos">Apontamentos</a>
+    </div>
+
+    <div class="menu-title">Cadastros</div>
+
+    <div class="menu">
+        <a href="#" class="nav-link" data-section="produtos">Produtos</a>
+        <a href="#" class="nav-link" data-section="usuarios">Usuários</a>
+        <a href="#" class="nav-link" data-section="setores">Setores</a>
+    </div>
+
+</div>
+
+<div class="main">
+
+    <div class="header">
+        <div>
+            <h1>DBN Industrial ERP</h1>
+            <p>Gestão integrada de produção modular industrial</p>
+        </div>
+    </div>
+
+    <section id="dashboard-section" class="content-section">
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="card-title">Produção do Dia</div>
+                <div class="card-value">82%</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Ordens em aberto</div>
+                <div class="card-value">24</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Expedições</div>
+                <div class="card-value">12</div>
+            </div>
+
+        </div>
+
+        <div class="panel">
+            <h2>Produção Semanal</h2>
+
+            <div class="chart-container">
+                <canvas id="productionChart"></canvas>
+            </div>
+        </div>
+
+    </section>
+
+    <section id="produtos-section" class="content-section">
+
+        <div class="panel">
+
+            <h2>Cadastro de Produtos</h2>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Nome Produto</label>
+                    <input type="text" id="produtoNome">
+                </div>
+
+                <div class="form-group">
+                    <label>Código</label>
+                    <input type="text" id="produtoCodigo">
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select id="produtoTipo">
+                        <option>Produto Final</option>
+                        <option>Subnível</option>
+                        <option>Matéria Prima</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Quantidade</label>
+                    <input type="number" id="produtoQtd">
+                </div>
+
+                <div class="form-group">
+                    <label>Itens componentes</label>
+                    <input type="text" id="produtoComponentes" placeholder="1501,1502,1503">
+                </div>
+
+            </div>
+
+            <button class="btn" onclick="adicionarProduto()">Cadastrar Produto</button>
+
+            <div style="overflow:auto;margin-top:25px;">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Produto</th>
+                            <th>Tipo</th>
+                            <th>Qtd</th>
+                            <th>Componentes</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tabelaProdutos">
+
+                        <tr>
+                            <td>1900</td>
+                            <td>Cela Completa</td>
+                            <td>Produto Final</td>
+                            <td>1</td>
+                            <td>#1501 | #1502 | #1503 | #1504</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section id="usuarios-section" class="content-section">
+
+        <div class="panel">
+
+            <h2>Cadastro de Usuários</h2>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" id="usuarioNome">
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="usuarioEmail">
+                </div>
+
+                <div class="form-group">
+                    <label>Setor</label>
+                    <select id="usuarioSetor">
+                        <option>PCP</option>
+                        <option>CAD</option>
+                        <option>Montagem</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <button class="btn" onclick="adicionarUsuario()">Cadastrar Usuário</button>
+
+            <div style="overflow:auto;margin-top:25px;">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Setor</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tabelaUsuarios"></tbody>
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <section id="setores-section" class="content-section">
+
+        <div class="panel">
+
+            <h2>Cadastro de Setores</h2>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Nome Setor</label>
+                    <input type="text" id="setorNome">
+                </div>
+
+                <div class="form-group">
+                    <label>Responsabilidade</label>
+                    <input type="text" id="setorFuncao">
+                </div>
+
+            </div>
+
+            <button class="btn" onclick="adicionarSetor()">Cadastrar Setor</button>
+
+            <div class="sector-grid" id="listaSetores" style="margin-top:25px;"></div>
+
+        </div>
+
+    </section>
+
+    <section id="producao-section" class="content-section">
+
+        <div class="panel">
+
+            <h2>Controle de Produção</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Etapa</th>
+                        <th>Setor</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Parede Direita - 1503</td>
+                        <td>Concretagem</td>
+                        <td>CAD</td>
+                        <td><span class="status andamento">Em andamento</span></td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <section id="relatorio-section" class="content-section">
+
+        <div class="panel">
+
+            <h2>Relatório Diário</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Setor</th>
+                        <th>Seg</th>
+                        <th>Ter</th>
+                        <th>Qua</th>
+                        <th>Qui</th>
+                        <th>Sex</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>CAD</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td>1</td>
+                        <td>4</td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+    <section id="apontamentos-section" class="content-section">
+
+        <div class="panel">
+
+            <h2>Apontamento de Produção</h2>
+            <p style="margin-bottom:20px;color:#64748b;">
+                Geração de QRCode e controle de fases produtivas por item.
+            </p>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Nome do Item</label>
+                    <input type="text" id="apontamentoNome" placeholder="Parede Direita">
+                </div>
+
+                <div class="form-group">
+                    <label>Código Item</label>
+                    <input type="text" id="apontamentoCodigo" placeholder="1503">
+                </div>
+
+                <div class="form-group">
+                    <label>Projeto</label>
+                    <input type="text" id="apontamentoProjeto" placeholder="Cela FastFlax">
+                </div>
+
+            </div>
+
+            <button class="btn" onclick="gerarApontamento()">
+                Gerar QRCode do Item
+            </button>
+
+            <div id="listaApontamentos" style="margin-top:30px;"></div>
+
+        </div>
+
+    </section>
+
+</div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const links = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.content-section');
+
+    function hideAllSections(){
+        sections.forEach(section => {
+            section.style.display = 'none';
+        });
+    }
+
+    function removeActiveLinks(){
+        links.forEach(link => {
+            link.classList.remove('active');
+        });
+    }
+
+    links.forEach(link => {
+
+        link.addEventListener('click', function(e){
+
+            e.preventDefault();
+
+            const sectionName = this.dataset.section;
+
+            const targetSection = document.getElementById(sectionName + '-section');
+
+            if(!targetSection) return;
+
+            hideAllSections();
+            removeActiveLinks();
+
+            targetSection.style.display = 'block';
+            this.classList.add('active');
+
+        });
+
+    });
+
+    window.adicionarProduto = function(){
+
+        const nome = document.getElementById('produtoNome').value;
+        const codigo = document.getElementById('produtoCodigo').value;
+        const tipo = document.getElementById('produtoTipo').value;
+        const qtd = document.getElementById('produtoQtd').value;
+        const componentes = document.getElementById('produtoComponentes').value;
+
+        if(!nome || !codigo) return;
+
+        const tabela = document.getElementById('tabelaProdutos');
+
+        let componentesFormatados = '-';
+
+        if(componentes){
+            componentesFormatados = componentes
+            .split(',')
+            .map(item => `#${item.trim()}`)
+            .join(' | ');
+        }
+
+        tabela.innerHTML += `
+            <tr>
+                <td>${codigo}</td>
+                <td>${nome}</td>
+                <td>${tipo}</td>
+                <td>${qtd}</td>
+                <td>${componentesFormatados}</td>
+            </tr>
+        `;
+
+        document.getElementById('produtoNome').value = '';
+        document.getElementById('produtoCodigo').value = '';
+        document.getElementById('produtoQtd').value = '';
+        document.getElementById('produtoComponentes').value = '';
+
+    }
+
+    window.adicionarUsuario = function(){
+
+        const nome = document.getElementById('usuarioNome').value;
+        const email = document.getElementById('usuarioEmail').value;
+        const setor = document.getElementById('usuarioSetor').value;
+
+        if(!nome || !email) return;
+
+        const tabela = document.getElementById('tabelaUsuarios');
+
+        tabela.innerHTML += `
+            <tr>
+                <td>${nome}</td>
+                <td>${email}</td>
+                <td>${setor}</td>
+            </tr>
+        `;
+
+        document.getElementById('usuarioNome').value = '';
+        document.getElementById('usuarioEmail').value = '';
+
+    }
+
+    window.adicionarSetor = function(){
+
+        const nome = document.getElementById('setorNome').value;
+        const funcao = document.getElementById('setorFuncao').value;
+
+        if(!nome || !funcao) return;
+
+        const lista = document.getElementById('listaSetores');
+
+        lista.innerHTML += `
+            <div class="sector-card">
+                <h3>${nome}</h3>
+                <p>${funcao}</p>
+            </div>
+        `;
+
+        document.getElementById('setorNome').value = '';
+        document.getElementById('setorFuncao').value = '';
+
+    }
+
+    // =========================
+    // APONTAMENTO + QRCODE
+    // =========================
+
+    window.gerarApontamento = function(){
+
+        const nome = document.getElementById('apontamentoNome').value;
+        const codigo = document.getElementById('apontamentoCodigo').value;
+        const projeto = document.getElementById('apontamentoProjeto').value;
+
+        if(!nome || !codigo) {
+            alert('Preencha nome e código do item');
+            return;
+        }
+
+        const identificador = `${codigo}-${Date.now()}`;
+
+        const container = document.getElementById('listaApontamentos');
+
+        const card = document.createElement('div');
+
+        card.className = 'panel';
+
+        card.style.marginBottom = '25px';
+
+        card.innerHTML = `
+
+            <div style="display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:flex-start;">
+
+                <div>
+                    <h3 style="margin-bottom:15px;color:#0f172a;">${nome}</h3>
+
+                    <p><strong>Código:</strong> ${codigo}</p>
+                    <p><strong>Projeto:</strong> ${projeto}</p>
+                    <p><strong>ID Produção:</strong> ${identificador}</p>
+
+                    <div style="margin-top:20px;display:flex;flex-direction:column;gap:12px;">
+
+                        <div class="fase-item">
+                            <span>Iniciando</span>
+                            <select onchange="alterarStatusFase(this)">
+                                <option>Pendente</option>
+                                <option>Em andamento</option>
+                                <option>Finalizado</option>
+                            </select>
+                        </div>
+
+                        <div class="fase-item">
+                            <span>Em andamento</span>
+                            <select onchange="alterarStatusFase(this)">
+                                <option>Pendente</option>
+                                <option>Em andamento</option>
+                                <option>Finalizado</option>
+                            </select>
+                        </div>
+
+                        <div class="fase-item">
+                            <span>Finalizado</span>
+                            <select onchange="alterarStatusFase(this)">
+                                <option>Pendente</option>
+                                <option>Em andamento</option>
+                                <option>Finalizado</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div>
+                    <div id="qrcode-${identificador}" style="background:white;padding:15px;border-radius:16px;"></div>
+                </div>
+
+            </div>
+
+        `;
+
+        container.prepend(card);
+
+        new QRCode(document.getElementById(`qrcode-${identificador}`), {
+            text: `Item:${nome} | Código:${codigo} | Projeto:${projeto} | ID:${identificador}`,
+            width: 180,
+            height: 180
+        });
+
+        document.getElementById('apontamentoNome').value = '';
+        document.getElementById('apontamentoCodigo').value = '';
+        document.getElementById('apontamentoProjeto').value = '';
 
     }
 
@@ -56,3 +867,4 @@
 
 </body>
 </html>
+```
