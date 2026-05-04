@@ -1,1428 +1,1538 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DBN ERP - Sistemas Construtivos</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-:root{--primary:#f97316;--primary-dark:#ea580c;--primary-light:#fb923c;--dark:#0f172a;--dark-2:#1e293b;--dark-3:#334155;--light:#f8fafc;--border:#e2e8f0;--gray:#64748b;--gray-light:#94a3b8;--success:#16a34a;--success-light:#22c55e;--danger:#dc2626;--danger-light:#ef4444;--info:#3b82f6;--info-light:#60a5fa;--warning:#f59e0b;--purple:#a855f7;--shadow:0 10px 40px rgba(0,0,0,0.1);--shadow-sm:0 4px 12px rgba(0,0,0,0.05);--radius:16px;--radius-lg:24px;}
-body{font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#f1f5f9 0%,#fff7ed 50%,#fef3c7 100%);display:flex;min-height:100vh;}
-.sidebar{width:300px;background:linear-gradient(180deg,#1e293b 0%,#0f172a 100%);padding:30px 20px;color:white;box-shadow:4px 0 20px rgba(0,0,0,0.1);position:fixed;height:100vh;overflow-y:auto;z-index:100;}
-.logo{margin-bottom:40px;display:flex;align-items:center;gap:15px;padding:10px;}
-.logo-icon{background:linear-gradient(135deg,#f97316,#ea580c);width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;box-shadow:0 4px 15px rgba(249,115,22,0.4);}
-.logo-text{font-size:20px;font-weight:700;letter-spacing:-0.5px;}
-.logo-text small{font-size:11px;color:#94a3b8;display:block;font-weight:500;margin-top:2px;}
-.menu-title{font-size:11px;color:#64748b;margin:25px 0 12px;text-transform:uppercase;letter-spacing:1px;padding-left:12px;font-weight:600;}
-.menu{display:flex;flex-direction:column;gap:6px;}
-.menu a{text-decoration:none;color:#e2e8f0;padding:14px 16px;border-radius:14px;transition:all 0.3s;font-size:14px;font-weight:500;display:flex;align-items:center;gap:12px;}
-.menu a:hover{background:rgba(255,255,255,0.1);transform:translateX(3px);}
-.menu a.active{background:linear-gradient(135deg,#f97316,#ea580c);color:white;box-shadow:0 4px 15px rgba(249,115,22,0.4);}
-.menu a .icon{font-size:18px;}
-.main{flex:1;margin-left:300px;padding:35px;overflow-y:auto;min-height:100vh;}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:35px;padding-bottom:20px;border-bottom:2px solid rgba(249,115,22,0.1);}
-.header h1{font-size:34px;color:#0f172a;font-weight:700;letter-spacing:-1px;}
-.header p{color:#64748b;font-size:15px;margin-top:5px;}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:25px;margin-bottom:30px;}
-.card{background:rgba(255,255,255,0.95);border:1px solid rgba(255,255,255,0.8);backdrop-filter:blur(12px);padding:28px;border-radius:var(--radius-lg);box-shadow:var(--shadow);transition:all 0.3s;position:relative;overflow:hidden;}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#f97316,#ea580c);}
-.card:hover{transform:translateY(-5px);box-shadow:0 15px 40px rgba(0,0,0,0.12);}
-.card-icon{position:absolute;top:25px;right:25px;width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;}
-.card-icon.orange{background:linear-gradient(135deg,#f97316,#ea580c);}
-.card-icon.green{background:linear-gradient(135deg,#22c55e,#16a34a);}
-.card-icon.blue{background:linear-gradient(135deg,#3b82f6,#2563eb);}
-.card-icon.purple{background:linear-gradient(135deg,#a855f7,#9333ea);}
-.card-title{font-size:14px;color:#64748b;margin-bottom:12px;font-weight:500;}
-.card-value{font-size:36px;font-weight:800;color:#0f172a;letter-spacing:-1px;}
-.panel{background:rgba(255,255,255,0.98);border:1px solid var(--border);border-radius:var(--radius-lg);padding:30px;margin-bottom:25px;box-shadow:var(--shadow);}
-.panel h2{margin-bottom:25px;color:#0f172a;font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px;}
-.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-bottom:25px;}
-.form-group{display:flex;flex-direction:column;gap:8px;}
-.form-group label{font-size:13px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;}
-.form-group input,.form-group select,.form-group textarea{padding:16px;border-radius:14px;border:2px solid var(--border);font-family:'Poppins',sans-serif;font-size:14px;transition:all 0.3s;background:white;}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#f97316;box-shadow:0 0 0 4px rgba(249,115,22,0.1);}
-.btn{border:none;background:linear-gradient(135deg,#f97316,#ea580c);color:white;padding:16px 28px;border-radius:14px;cursor:pointer;font-weight:600;transition:all 0.3s;font-size:14px;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 15px rgba(249,115,22,0.3);}
-.btn-secondary{background:linear-gradient(135deg,#64748b,#475569);box-shadow:0 4px 15px rgba(100,116,139,0.3);}
-.btn-danger{background:linear-gradient(135deg,#dc2626,#b91c1c);box-shadow:0 4px 15px rgba(220,38,38,0.3);}
-.btn-success{background:linear-gradient(135deg,#16a34a,#15803d);box-shadow:0 4px 15px rgba(22,163,74,0.3);}
-.btn-small{padding:8px 16px;font-size:13px;border-radius:10px;}
-.btn:hover{opacity:0.95;transform:translateY(-2px);box-shadow:0 6px 20px rgba(249,115,22,0.4);}
-.btn-secondary:hover{box-shadow:0 6px 20px rgba(100,116,139,0.4);}
-.btn-danger:hover{box-shadow:0 6px 20px rgba(220,38,38,0.4);}
-table{width:100%;border-collapse:separate;border-spacing:0;}
-table th{background:linear-gradient(135deg,#f97316,#ea580c);color:white;text-align:left;padding:18px;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
-table th:first-child{border-radius:14px 0 0 0;}
-table th:last-child{border-radius:0 14px 0 0;}
-table td{padding:18px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#475569;}
-table tr:last-child td{border-bottom:none;}
-table tr:hover td{background:#fff7ed;}
-.status{padding:8px 16px;border-radius:999px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
-.andamento{background:#dbeafe;color:#1d4ed8;}
-.finalizado{background:#dcfce7;color:#15803d;}
-.sector-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;}
-.sector-card{background:linear-gradient(135deg,#1e293b,#0f172a);color:white;padding:25px;border-radius:var(--radius-lg);box-shadow:var(--shadow);transition:all 0.3s;}
-.sector-card:hover{transform:translateY(-5px);}
-.sector-card h3{font-size:18px;margin-bottom:8px;}
-.sector-card p{color:#94a3b8;font-size:13px;line-height:1.6;}
-.content-section{display:none;animation:fadeIn 0.4s ease;}
-#dashboard-section{display:block;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-.chart-container{height:350px;}
-.needs-summary{background:linear-gradient(135deg,#fef3c7,#ffedd5);border-radius:var(--radius-lg);padding:25px;margin-top:25px;border:2px solid #fcd34d;}
-.needs-summary h3{color:#92400e;margin-bottom:20px;font-size:18px;font-weight:700;}
-.needs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:15px;}
-.needs-item{background:white;padding:18px;border-radius:16px;display:flex;justify-content:space-between;align-items:center;font-weight:600;box-shadow:var(--shadow-sm);transition:all 0.3s;}
-.needs-item:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
-.remover-btn{background:linear-gradient(135deg,#dc2626,#b91c1c);color:white;border:none;border-radius:10px;padding:8px 16px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.3s;}
-.remover-btn:hover{transform:scale(1.05);}
-.apontamento-card{border-left:4px solid #f97316;margin-bottom:15px;padding:20px;background:linear-gradient(135deg,#fff7ed,#ffedd5);border-radius:14px;box-shadow:var(--shadow-sm);}
-.relatorio-tabela{overflow-x:auto;margin-top:25px;}
-.relatorio-tabela table{min-width:600px;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
-.relatorio-tabela th,.relatorio-tabela td{border:1px solid var(--border);text-align:center;padding:14px;}
-.relatorio-tabela th{background:linear-gradient(135deg,#f97316,#ea580c);color:white;}
-.celula-prod{background:#fef9c3;font-weight:600;color:#92400e;}
-.checkbox-group{display:flex;align-items:center;gap:10px;padding:16px;background:#f8fafc;border-radius:14px;}
-.checkbox-group input[type="checkbox"]{width:20px;height:20px;accent-color:#f97316;}
-@media(max-width:900px){body{flex-direction:column;}.sidebar{width:100%;height:auto;position:relative;}.main{margin-left:0;padding:20px;}}
-.badge{display:inline-block;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;}
-.badge-insumo{background:#dbeafe;color:#1d4ed8;}
-.badge-parede{background:#dcfce7;color:#15803d;}
-.badge-produto{background:#f3e8ff;color:#7c3aed;}
-.status-pendente{background:#fef3c7;color:#92400e;border:2px solid #fcd34d;}
-.status-em-andamento{background:#dbeafe;color:#1d4ed8;border:2px solid #60a5fa;}
-.status-concluido{background:#dcfce7;color:#15803d;border:2px solid #22c55e;}
-.status-cancelado{background:#fee2e2;color:#991b1b;border:2px solid #ef4444;}
-.status.andamento{background:#dbeafe;color:#1d4ed8;}
-.status.pendente{background:#f1f5f9;color:#64748b;}
-.qr-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;}
-.qr-modal.active{display:flex;}
-.qr-modal#etapasScreen{background:linear-gradient(135deg,#f1f5f9,#e2e8f0);}
-.qr-content{background:white;padding:35px;border-radius:24px;text-align:center;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:qrFadeIn 0.3s ease;}
-.etapa-item{display:flex;align-items:center;gap:15px;padding:18px;background:#f8fafc;border-radius:14px;margin-bottom:12px;transition:all 0.3s;border-left:4px solid #e2e8f0;}
-.etapa-item:hover{transform:translateX(5px);box-shadow:0 4px 12px rgba(0,0,0,0.08);}
-.etapa-item.ativa{background:linear-gradient(135deg,#fff7ed,#ffedd5);border-left-color:#f97316;}
-.etapa-item.concluida{background:linear-gradient(135deg,#dcfce7,#f0fdf4);border-left-color:#22c55e;}
-.etapa-number{width:40px;height:40px;border-radius:50%;background:#e2e8f0;color:#64748b;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;}
-.etapa-item.ativa .etapa-number{background:linear-gradient(135deg,#f97316,#ea580c);color:white;}
-.etapa-item.concluida .etapa-number{background:linear-gradient(135deg,#22c55e,#16a34a);color:white;}
-.etapa-info{flex:1;text-align:left;}
-.etapa-info h4{margin:0 0 5px 0;color:#0f172a;font-size:15px;}
-.etapa-info p{margin:0;color:#64748b;font-size:13px;}
-.etapa-status{padding:6px 12px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;}
-@keyframes qrFadeIn{from{opacity:0;transform:scale(0.9);}to{opacity:1;transform:scale(1);}}
-.qr-content h3{color:#0f172a;margin-bottom:20px;font-size:20px;}
-.qr-code-container{background:white;padding:20px;border-radius:16px;display:inline-block;margin:20px 0;border:2px solid #f1f5f9;}
-.qr-info{text-align:left;background:#f8fafc;padding:20px;border-radius:14px;margin-top:20px;}
-.qr-info p{margin:8px 0;font-size:14px;color:#475569;}
-.qr-info strong{color:#0f172a;}
-.close-modal{background:#f1f5f9;border:none;padding:12px 24px;border-radius:12px;cursor:pointer;font-weight:600;color:#475569;transition:all 0.3s;margin-top:15px;}
-.close-modal:hover{background:#e2e8f0;color:#0f172a;}
-.status-select{padding:10px 14px;border-radius:10px;border:2px solid #e2e8f0;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.3s;}
-.status-select:hover{border-color:#f97316;}
-.apontamento-actions{display:flex;gap:10px;flex-wrap:wrap;}
-.toast{position:fixed;bottom:30px;right:30px;background:linear-gradient(135deg,#16a34a,#15803d);color:white;padding:16px 24px;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,0.2);display:flex;align-items:center;gap:12px;font-weight:600;transform:translateY(100px);opacity:0;transition:all 0.4s;z-index:2000;}
-.toast.show{transform:translateY(0);opacity:1;}
-.toast.error{background:linear-gradient(135deg,#dc2626,#b91c1c);}
-.toast.warning{background:linear-gradient(135deg,#f59e0b,#d97706);}
-.toast.info{background:linear-gradient(135deg,#3b82f6,#2563eb);}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DBN ERP - Sistema de Gestão para Sistemas Construtivos">
+    <title>DBN ERP - Sistemas Construtivos</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Z13uck3sB3hQC00Cri6Vzrtd9XFPt+miGLpGMIKxRBu1wBBGPQLRMSlOq8KYl2fIxK3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    
+    <script>
+        // Verificar se bibliotecas carregaram
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('QRCode library loaded:', typeof QRCode !== 'undefined');
+            console.log('Html5Qrcode library loaded:', typeof Html5Qrcode !== 'undefined');
+        });
+    </script>
+    
+    <style>
+        /* ========================================
+           CSS VARIABLES & RESET
+           ======================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #f97316;
+            --primary-dark: #ea580c;
+            --primary-light: #fb923c;
+            --dark: #0f172a;
+            --dark-2: #1e293b;
+            --dark-3: #334155;
+            --light: #f8fafc;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --success: #16a34a;
+            --success-light: #22c55e;
+            --danger: #dc2626;
+            --danger-light: #ef4444;
+            --info: #3b82f6;
+            --info-light: #60a5fa;
+            --warning: #f59e0b;
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --radius: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #fff7ed 50%, #fef3c7 100%);
+            display: flex;
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(180deg, var(--dark-2) 0%, var(--dark) 100%);
+            padding: 30px 20px;
+            color: white;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        
+        .logo {
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+        }
+        
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: 800;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+        }
+        
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .logo-text small {
+            font-size: 11px;
+            color: var(--gray-light);
+            display: block;
+            font-weight: 500;
+            margin-top: 2px;
+        }
+        
+        .menu-title {
+            font-size: 11px;
+            color: var(--gray-light);
+            margin: 25px 0 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-left: 12px;
+            font-weight: 600;
+        }
+        
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .menu a {
+            text-decoration: none;
+            color: #e2e8f0;
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .menu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(3px);
+        }
+        
+        .menu a.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+        }
+        
+        .menu a .icon {
+            font-size: 18px;
+        }
+        
+        /* Main Content */
+        .main {
+            flex: 1;
+            margin-left: 300px;
+            padding: 35px;
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(249, 115, 22, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 34px;
+            color: var(--dark);
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+        
+        .header p {
+            color: var(--gray);
+            font-size: 15px;
+            margin-top: 5px;
+        }
+        
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 28px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-icon {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        
+        .card-icon.orange { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+        .card-icon.green { background: linear-gradient(135deg, var(--success-light), var(--success)); }
+        .card-icon.blue { background: linear-gradient(135deg, var(--info), var(--info-light)); }
+        .card-icon.purple { background: linear-gradient(135deg, var(--purple), #9333ea); }
+        .card-icon.cyan { background: linear-gradient(135deg, var(--cyan), #0891b2); }
+        
+        .card-title {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        
+        .card-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--dark);
+            letter-spacing: -1px;
+        }
+        
+        /* Panels */
+        .panel {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+        
+        .panel h2 {
+            margin-bottom: 25px;
+            color: var(--dark);
+            font-size: 22px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dark-3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 16px;
+            border-radius: var(--radius);
+            border: 2px solid var(--border);
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            transition: var(--transition);
+            background: white;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1);
+        }
+        
+        .form-group input[readonly] {
+            background: #f1f5f9;
+            cursor: not-allowed;
+        }
+        
+        /* Buttons */
+        .btn {
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 16px 28px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--gray), var(--dark-3));
+            box-shadow: 0 4px 15px rgba(100, 116, 139, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), var(--danger-light));
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), var(--success-light));
+            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, var(--info), var(--info-light));
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-cyan {
+            background: linear-gradient(135deg, var(--cyan), #0891b2);
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+            border-radius: 10px;
+        }
+        
+        .btn-lg {
+            padding: 20px 32px;
+            font-size: 16px;
+            border-radius: var(--radius);
+        }
+        
+        .btn:hover {
+            opacity: 0.95;
+            transform: translateY(-2px);
+        }
+        
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        table th {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            text-align: left;
+            padding: 18px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        table th:first-child { border-radius: var(--radius) 0 0 0; }
+        table th:last-child { border-radius: 0 var(--radius) 0 0; }
+        
+        table td {
+            padding: 18px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+            color: var(--dark-3);
+        }
+        
+        table tr:last-child td { border-bottom: none; }
+        table tr:hover td { background: #fff7ed; }
+        
+        /* Status Badges */
+        .status {
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-pendente { background: #fef3c7; color: #92400e; border: 2px solid #fcd34d; }
+        .status-em-andamento { background: #dbeafe; color: #1d4ed8; border: 2px solid var(--info-light); }
+        .status-concluido { background: #dcfce7; color: #15803d; border: 2px solid var(--success-light); }
+        .status-serralheria { background: #fef3c7; color: #92400e; border: 2px solid #f97316; }
+        .status-cad { background: #dbeafe; color: #1d4ed8; border: 2px solid #3b82f6; }
+        
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        
+        .badge-insumo { background: #dbeafe; color: #1d4ed8; }
+        .badge-parede { background: #dcfce7; color: #15803d; }
+        .badge-produto { background: #f3e8ff; color: #7c3aed; }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active { display: flex; }
+        
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 20px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: var(--radius);
+            border-left: 4px solid var(--border);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border);
+            border: 2px solid white;
+        }
+        
+        .timeline-item.concluido {
+            background: linear-gradient(135deg, #dcfce7, #f0fdf4);
+            border-left-color: var(--success);
+        }
+        
+        .timeline-item.concluido::before {
+            background: var(--success);
+        }
+        
+        .timeline-item.em-andamento {
+            background: linear-gradient(135deg, #dbeafe, #eff6ff);
+            border-left-color: var(--info);
+        }
+        
+        .timeline-item.em-andamento::before {
+            background: var(--info);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+        
+        /* QR Scanner */
+        .qr-scanner-container {
+            background: var(--dark);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        #qr-reader {
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: white;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--success), var(--success-light));
+            color: white;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 2000;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.error { background: linear-gradient(135deg, var(--danger), var(--danger-light)); }
+        .toast.warning { background: linear-gradient(135deg, var(--warning), #d97706); }
+        .toast.info { background: linear-gradient(135deg, var(--info), var(--info-light)); }
+        
+        /* Code Display */
+        .code-display {
+            background: linear-gradient(135deg, var(--dark-2), var(--dark));
+            color: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .code-display .code {
+            font-family: 'Courier New', monospace;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--primary-light);
+        }
+        
+        .code-display .label {
+            font-size: 12px;
+            color: var(--gray-light);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        
+        /* QR Result Container */
+        .qr-result {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: var(--radius);
+            border: 2px solid var(--border);
+            margin: 20px 0;
+            min-height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #serraQRCode img {
+            margin: 0 auto;
+        }
+        
+        #serraQRCode canvas {
+            margin: 0 auto;
+        }
+        
+        /* Responsive */
+        @media (max-width: 900px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: relative; }
+            .main { margin-left: 0; padding: 20px; }
+            .header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .cards { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+        
+        /* Content Sections */
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        #dashboard-section { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
-
-<div class="sidebar">
-    <div class="logo">
-        <div class="logo-icon">DBN</div>
-        <div class="logo-text">DBN ERP<small>SISTEMAS CONSTRUTIVOS</small></div>
-    </div>
-    
-    <div class="menu-title">⚡ Principal</div>
-    <div class="menu">
-        <a href="#" class="nav-link active" data-section="dashboard"><span class="icon">📊</span>Dashboard</a>
-        <a href="#" class="nav-link" data-section="producao"><span class="icon">🏭</span>Produção</a>
-        <a href="#" class="nav-link" data-section="relatorio"><span class="icon">📋</span>Relatório Diário</a>
-        <a href="#" class="nav-link" data-section="apontamentos"><span class="icon">📝</span>Apontamentos</a>
-        <a href="#" class="nav-link" data-section="programacao"><span class="icon">📅</span>Programação</a>
-        <a href="#" class="nav-link" data-section="relatorioFabrica"><span class="icon">🏗️</span>Relatório Fábrica</a>
-    </div>
-    
-    <div class="menu-title">📁 Cadastros</div>
-    <div class="menu">
-        <a href="#" class="nav-link" data-section="produtos"><span class="icon">📦</span>Produtos</a>
-        <a href="#" class="nav-link" data-section="usuarios"><span class="icon">👥</span>Usuários</a>
-        <a href="#" class="nav-link" data-section="setores"><span class="icon">🏢</span>Setores</a>
-    </div>
-</div>
-
-<div class="main">
-    <div class="header">
-        <div>
-            <h1>DBN Industrial ERP</h1>
-            <p id="headerSubtitle">Visão geral da produção</p>
-        </div>
-        <div style="display:flex;align-items:center;gap:15px;">
-            <span style="background:#f1f5f9;padding:10px 20px;border-radius:12px;font-size:14px;color:#64748b;">📅 <span id="dataAtual"></span></span>
-        </div>
-    </div>
-
-    <!-- DASHBOARD -->
-    <section id="dashboard-section" class="content-section">
-        <div class="cards">
-            <div class="card">
-                <div class="card-title">Produção Hoje</div>
-                <div class="card-value" id="totalProduzidoHoje">0</div>
-                <div class="card-icon orange">⚡</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Celas Completas (Mês)</div>
-                <div class="card-value" id="totalCelasMes">0</div>
-                <div class="card-icon green">🏗️</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Paredes Produzidas</div>
-                <div class="card-value" id="totalParedes">0</div>
-                <div class="card-icon blue">🧱</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Programações Ativas</div>
-                <div class="card-value" id="totalProgramacoes">0</div>
-                <div class="card-icon purple">📋</div>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">DBN</div>
+            <div class="logo-text">
+                DBN ERP
+                <small>SISTEMAS CONSTRUTIVOS</small>
             </div>
         </div>
         
-        <div class="form-grid" style="margin-top:30px;">
-            <div class="panel">
-                <h2>📈 Produção Semanal</h2>
-                <div class="chart-container"><canvas id="productionChart"></canvas></div>
-            </div>
-            <div class="panel">
-                <h2>📊 Distribuição</h2>
-                <div class="chart-container"><canvas id="distributionChart"></canvas></div>
-            </div>
-        </div>
+        <div class="menu-title">⚡ Produção</div>
+        <nav class="menu">
+            <a href="#" class="nav-link active" data-section="dashboard"><span class="icon">📊</span>Dashboard</a>
+            <a href="#" class="nav-link" data-section="serralheria"><span class="icon">🔩</span>Serralheria</a>
+            <a href="#" class="nav-link" data-section="cad"><span class="icon">📐</span>CAD</a>
+            <a href="#" class="nav-link" data-section="apontamentos"><span class="icon">📋</span>Apontamentos</a>
+        </nav>
         
-        <div class="panel">
-            <h2>📦 Necessidade de Insumos</h2>
-            <div id="dashboardNeeds" class="needs-grid"></div>
-        </div>
-    </section>
+        <div class="menu-title">📁 Cadastros</div>
+        <nav class="menu">
+            <a href="#" class="nav-link" data-section="produtos"><span class="icon">📦</span>Produtos</a>
+        </nav>
+    </aside>
 
-    <!-- PRODUTOS -->
-    <section id="produtos-section" class="content-section">
-        <div class="panel">
-            <h2>📦 Cadastro de Produtos</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Nome do Produto</label>
-                    <input type="text" id="produtoNome" placeholder="Ex: Cela completa">
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        <header class="header">
+            <div>
+                <h1>DBN Industrial ERP</h1>
+                <p id="headerSubtitle">Controle de Produção</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:15px;">
+                <span style="background:#f1f5f9;padding:10px 20px;border-radius:12px;font-size:14px;color:var(--gray);">
+                    📅 <span id="dataAtual"></span>
+                </span>
+            </div>
+        </header>
+
+        <!-- DASHBOARD -->
+        <section id="dashboard-section" class="content-section">
+            <div class="cards">
+                <div class="card">
+                    <div class="card-title">Armações Produzidas</div>
+                    <div class="card-value" id="totalArmacoes">0</div>
+                    <div class="card-icon orange">🔩</div>
                 </div>
-                <div class="form-group">
-                    <label>Código (único)</label>
-                    <input type="text" id="produtoCodigo" placeholder="Ex: 1900">
+                <div class="card">
+                    <div class="card-title">Desenhos CAD</div>
+                    <div class="card-value" id="totalCAD">0</div>
+                    <div class="card-icon blue">📐</div>
                 </div>
-                <div class="form-group">
-                    <label>Categoria</label>
-                    <select id="produtoCategoria">
-                        <option value="Insumo">Insumo</option>
-                        <option value="Parede">Parede</option>
-                        <option value="ProdutoFinal">Produto Final</option>
-                    </select>
+                <div class="card">
+                    <div class="card-title">Em Produção</div>
+                    <div class="card-value" id="totalProducao">0</div>
+                    <div class="card-icon green">🏗️</div>
                 </div>
-                <div class="form-group">
-                    <label>Unidade</label>
-                    <input type="text" id="produtoUnidade" placeholder="m³, kg, UN">
+                <div class="card">
+                    <div class="card-title">Concluídos</div>
+                    <div class="card-value" id="totalConcluidos">0</div>
+                    <div class="card-icon purple">✅</div>
                 </div>
             </div>
-            <button class="btn" onclick="salvarProduto()">💾 Salvar Produto</button>
             
-            <div style="overflow:auto;margin-top:30px;">
-                <h3 style="margin-bottom:15px;color:#0f172a;">Produtos Cadastrados</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Código</th>
-                            <th>Nome</th>
-                            <th>Categoria</th>
-                            <th>Unidade</th>
-                            <th>Composição</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaProdutos"></tbody>
-                </table>
+            <div class="panel">
+                <h2>📊 Últimos Apontamentos</h2>
+                <div id="dashboardApontamentos"></div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- USUÁRIOS -->
-    <section id="usuarios-section" class="content-section">
-        <div class="panel">
-            <h2>👥 Cadastro de Usuários</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Nome</label>
-                    <input type="text" id="usuarioNome" placeholder="Nome completo">
+        <!-- SERRALHERIA -->
+        <section id="serralheria-section" class="content-section">
+            <div class="panel">
+                <h2>🔩 Serralheria - Iniciar Processo</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Produto</label>
+                        <select id="serraProduto"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantidade</label>
+                        <input type="number" id="serraQuantidade" value="1" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Responsável</label>
+                        <input type="text" id="serraResponsavel" placeholder="Nome do responsável">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="usuarioEmail" placeholder="email@empresa.com">
-                </div>
-                <div class="form-group">
-                    <label>Setor</label>
-                    <select id="usuarioSetor">
-                        <option>PCP</option>
-                        <option>CAD</option>
-                        <option>Montagem</option>
-                        <option>Concretagem</option>
-                    </select>
+                <button class="btn btn-lg btn-block" onclick="iniciarProcessoSerralheria()" style="margin-bottom:20px;">
+                    🔩 Iniciar Processo + Gerar QR Code
+                </button>
+                
+                <div id="serraResultado" style="display:none;">
+                    <div class="code-display">
+                        <div class="label">Código da Armação</div>
+                        <div class="code" id="serraCodigoExibido">SER-ARM-001</div>
+                    </div>
+                    <div class="qr-result">
+                        <div id="serraQRCode" style="display:inline-block;"></div>
+                    </div>
+                    <div class="form-grid">
+                        <button class="btn btn-info btn-block" onclick="imprimirQRSerralheria()">🖨️ Imprimir QR Code</button>
+                        <button class="btn btn-success btn-block" onclick="finalizarSerralheria()">✅ Confirmar e Enviar para CAD</button>
+                    </div>
                 </div>
             </div>
-            <button class="btn" onclick="adicionarUsuario()">✅ Cadastrar Usuário</button>
             
-            <div style="overflow:auto;margin-top:30px;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Email</th>
-                            <th>Setor</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaUsuarios"></tbody>
-                </table>
+            <div class="panel">
+                <h2>📋 Processos em Andamento</h2>
+                <div id="serraProcessos"></div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- SETORES -->
-    <section id="setores-section" class="content-section">
-        <div class="panel">
-            <h2>🏢 Cadastro de Setores</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Nome do Setor</label>
-                    <input type="text" id="setorNome" placeholder="Ex: PCP">
+        <!-- CAD -->
+        <section id="cad-section" class="content-section">
+            <div class="panel">
+                <h2>📐 CAD - Leitura de QR Code</h2>
+                <button class="btn btn-lg btn-cyan btn-block" onclick="iniciarLeituraQR()" style="margin-bottom:20px;">
+                    📷 Ler QR Code
+                </button>
+                
+                <div id="cadScannerContainer" class="qr-scanner-container" style="display:none;">
+                    <div id="qr-reader"></div>
+                    <button class="btn btn-danger btn-block" onclick="pararLeituraQR()" style="margin-top:15px;">
+                        ❌ Parar Leitura
+                    </button>
                 </div>
-                <div class="form-group">
-                    <label>Responsabilidade</label>
-                    <input type="text" id="setorFuncao" placeholder="Descrição das responsabilidades">
+                
+                <div id="cadLeituraInfo" style="display:none;margin-top:20px;">
+                    <div class="code-display" style="background:linear-gradient(135deg,#dbeafe,#eff6ff);">
+                        <div class="label" style="color:#1d4ed8;">Código Lido</div>
+                        <div class="code" id="cadCodigoLido" style="color:#1d4ed8;">DBN-001</div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Forma Usada</label>
+                            <select id="cadForma" onchange="atualizarCodigoCAD()">
+                                <option value="">Selecione a forma...</option>
+                                <option value="TETO">TETO</option>
+                                <option value="PISO">PISO</option>
+                                <option value="PAREDE01">PAREDE 01</option>
+                                <option value="PAREDE02">PAREDE 02</option>
+                                <option value="PAREDE03">PAREDE 03</option>
+                                <option value="PAREDE04">PAREDE 04</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Código CAD</label>
+                            <input type="text" id="cadCodigo" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Data Realizado</label>
+                            <input type="date" id="cadData">
+                        </div>
+                        <div class="form-group">
+                            <label>Hora Realizado</label>
+                            <input type="time" id="cadHora">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Hora da Leitura</label>
+                        <input type="text" id="cadHoraLeitura" readonly>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Observações</label>
+                        <textarea id="cadObs" rows="3" placeholder="Descreva o que foi feito na forma..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Responsável CAD</label>
+                        <input type="text" id="cadResponsavel" placeholder="Nome do responsável">
+                    </div>
+                    
+                    <button class="btn btn-success btn-lg btn-block" onclick="registrarCAD()" style="margin-top:20px;">
+                        ✅ Registrar no CAD
+                    </button>
                 </div>
             </div>
-            <button class="btn" onclick="adicionarSetor()">✅ Cadastrar Setor</button>
             
-            <div class="sector-grid" id="listaSetores" style="margin-top:30px;"></div>
-        </div>
-    </section>
-
-    <!-- PRODUÇÃO -->
-    <section id="producao-section" class="content-section">
-        <div class="panel">
-            <h2>🏭 Controle de Produção</h2>
-            <p style="color:#64748b;line-height:1.8;">Utilize a seção <strong>Apontamentos</strong> para registrar a produção em tempo real e a seção <strong>Programação</strong> para planejar a produção futura.</p>
-            <div style="margin-top:25px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;">
-                <div style="background:linear-gradient(135deg,#f97316,#ea580c);color:white;padding:25px;border-radius:16px;text-align:center;">
-                    <div style="font-size:40px;margin-bottom:10px;">📝</div>
-                    <div style="font-weight:600;">Registrar Apontamento</div>
-                </div>
-                <div style="background:linear-gradient(135deg,#3b82f6,#2563eb);color:white;padding:25px;border-radius:16px;text-align:center;">
-                    <div style="font-size:40px;margin-bottom:10px;">📅</div>
-                    <div style="font-weight:600;">Programar Produção</div>
-                </div>
+            <div class="panel">
+                <h2>📋 Desenhos CAD Registrados</h2>
+                <div id="cadRegistros"></div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- RELATÓRIO DIÁRIO -->
-    <section id="relatorio-section" class="content-section">
-        <div class="panel">
-            <h2>📋 Relatório Diário</h2>
-            <p style="color:#64748b;line-height:1.8;">Consulte o <strong>Relatório Fábrica</strong> para visualização completa da programação no estilo planilha.</p>
-        </div>
-    </section>
-
-    <!-- APONTAMENTOS -->
-    <section id="apontamentos-section" class="content-section">
-        <div class="panel">
-            <h2>📝 Apontamento de Produção</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Produto</label>
-                    <select id="apontamentoProduto"></select>
+        <!-- APONTAMENTOS -->
+        <section id="apontamentos-section" class="content-section">
+            <div class="panel">
+                <h2>📋 Todos os Apontamentos</h2>
+                <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+                    <button class="btn btn-small" onclick="filtrarApontamentos('todos')">Todos</button>
+                    <button class="btn btn-small btn-secondary" onclick="filtrarApontamentos('serralheria')">Serralheria</button>
+                    <button class="btn btn-small btn-info" onclick="filtrarApontamentos('cad')">CAD</button>
+                    <button class="btn btn-small btn-success" onclick="filtrarApontamentos('concluido')">Concluídos</button>
                 </div>
-                <div class="form-group">
-                    <label>Quantidade</label>
-                    <input type="number" id="apontamentoQtd" value="1" min="0.5" step="0.5">
-                </div>
-                <div class="form-group">
-                    <label>Setor</label>
-                    <select id="apontamentoSetor">
-                        <option>Montagem</option>
-                        <option>CAD</option>
-                        <option>Concretagem</option>
-                        <option>PCP</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Status Inicial</label>
-                    <select id="apontamentoStatus">
-                        <option value="pendente">⏳ Pendente</option>
-                        <option value="em-andamento">🔄 Em Andamento</option>
-                        <option value="concluido">✅ Concluído</option>
-                    </select>
-                </div>
+                <div id="todosApontamentos"></div>
             </div>
-            <button class="btn" onclick="registrarApontamento()">✅ Registrar Produção</button>
-            
-            <hr style="margin:30px 0;border:none;border-top:2px solid #f1f5f9;">
-            
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                <h3 style="color:#0f172a;">📋 Histórico de Apontamentos</h3>
-                <div style="display:flex;gap:10px;align-items:center;">
-                    <span style="font-size:13px;color:#64748b;">Filtrar por status:</span>
-                    <select id="filtroStatus" onchange="filtrarApontamentosPorStatus()" style="padding:8px 14px;border-radius:10px;border:2px solid #e2e8f0;font-size:13px;">
-                        <option value="todos">Todos</option>
-                        <option value="pendente">⏳ Pendente</option>
-                        <option value="em-andamento">🔄 Em Andamento</option>
-                        <option value="concluido">✅ Concluído</option>
-                        <option value="cancelado">❌ Cancelado</option>
-                    </select>
-                </div>
-            </div>
-            <div id="listaApontamentos"></div>
-        </div>
-    </section>
+        </section>
 
-    <!-- TOAST NOTIFICATION -->
+        <!-- PRODUTOS -->
+        <section id="produtos-section" class="content-section">
+            <div class="panel">
+                <h2>📦 Cadastro de Produtos</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Nome do Produto</label>
+                        <input type="text" id="produtoNome" placeholder="Ex: Cela completa">
+                    </div>
+                    <div class="form-group">
+                        <label>Código</label>
+                        <input type="text" id="produtoCodigo" placeholder="Ex: 1900">
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select id="produtoCategoria">
+                            <option value="Armacao">Armação</option>
+                            <option value="Parede">Parede</option>
+                            <option value="ProdutoFinal">Produto Final</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn" onclick="salvarProduto()">💾 Salvar</button>
+                <div id="listaProdutos" style="margin-top:20px;"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- TOAST -->
     <div id="toast" class="toast">
         <span id="toastIcon">✅</span>
         <span id="toastMessage">Operação realizada!</span>
     </div>
 
-    <!-- TELA DE ETAPAS (ACESSO VIA QR CODE) -->
-    <div id="etapasScreen" class="qr-modal" style="background:white;">
-        <div class="qr-content" style="max-width:600px;width:90%;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-                <h3 style="margin:0;">📱 Etapas de Produção</h3>
-                <button class="close-modal" onclick="fecharTelaEtapas()" style="margin:0;">✕ Fechar</button>
-            </div>
-            <div id="etapasInfo" class="qr-info" style="margin:0 0 20px 0;"></div>
-            <div id="etapasTimeline" style="margin-top:25px;"></div>
-            <div style="margin-top:25px;padding-top:20px;border-top:2px solid #f1f5f9;">
-                <h4 style="margin-bottom:15px;color:#0f172a;">🔄 Atualizar Etapa</h4>
-                <div class="form-grid" style="grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
-                    <div class="form-group">
-                        <label>Setor Responsável</label>
-                        <select id="etapasSetor" style="width:100%;padding:12px;border-radius:10px;border:2px solid #e2e8f0;">
-                            <option value="CAD">CAD - Desenho</option>
-                            <option value="Corte">Corte</option>
-                            <option value="Montagem">Montagem</option>
-                            <option value="Concretagem">Concretagem</option>
-                            <option value="Acabamento">Acabamento</option>
-                            <option value="Qualidade">Qualidade</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Nova Etapa</label>
-                        <select id="etapasStatus" style="width:100%;padding:12px;border-radius:10px;border:2px solid #e2e8f0;">
-                            <option value="pendente">⏳ Pendente</option>
-                            <option value="em-andamento">🔄 Em Andamento</option>
-                            <option value="concluido">✅ Concluído</option>
-                        </select>
-                    </div>
-                </div>
-                <button class="btn" onclick="atualizarEtapaQR()" style="width:100%;">✅ Atualizar Etapa</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL QR CODE -->
-    <div id="qrModal" class="qr-modal">
-        <div class="qr-content">
-            <h3>📱 QR Code do Apontamento</h3>
-            <div id="qrCodeContainer" class="qr-code-container"></div>
-            <div class="qr-info">
-                <p><strong>Produto:</strong> <span id="qrProduto"></span></p>
-                <p><strong>Quantidade:</strong> <span id="qrQuantidade"></span></p>
-                <p><strong>Setor:</strong> <span id="qrSetor"></span></p>
-                <p><strong>Status:</strong> <span id="qrStatus"></span></p>
-                <p><strong>Data:</strong> <span id="qrData"></span></p>
-                <p><strong>ID:</strong> <span id="qrId" style="font-family:monospace;font-size:12px;"></span></p>
-            </div>
-            <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;">
-                <button class="btn btn-small" onclick="imprimirQRCode()" style="background:linear-gradient(135deg,#16a34a,#15803d);">🖨️ Imprimir</button>
-                <button class="btn btn-small" onclick="copiarIDQR()" style="background:linear-gradient(135deg,#64748b,#475569);">📋 Copiar ID</button>
-                <button class="btn btn-small" onclick="abrirTelaEtapas()" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);">📍 Acessar Etapas</button>
-            </div>
-            <button class="close-modal" onclick="fecharModalQR()" style="margin-top:15px;">✕ Fechar</button>
-        </div>
-    </div>
-
-    <!-- PROGRAMAÇÃO -->
-    <section id="programacao-section" class="content-section">
-        <div class="panel">
-            <h2>📅 Programação de Produção</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Data</label>
-                    <input type="date" id="progData">
-                </div>
-                <div class="form-group">
-                    <label>Produto Final / Parede</label>
-                    <select id="progProduto"></select>
-                </div>
-                <div class="form-group">
-                    <label>Quantidade</label>
-                    <input type="number" id="progQuantidade" value="1" min="1">
-                </div>
-            </div>
-            <button class="btn" onclick="adicionarProgramacao()">+ Adicionar à Programação</button>
-            
-            <div style="margin-top:30px;overflow:auto;">
-                <h3 style="margin-bottom:15px;color:#0f172a;">📋 Programações Registradas</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Produto</th>
-                            <th>Quantidade</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaProgramacao"></tbody>
-                </table>
-            </div>
-            
-            <div class="needs-summary" id="needsContainer">
-                <h3>📊 Necessidade Total de Insumos</h3>
-                <div id="needsList" class="needs-grid"></div>
-                <button class="btn btn-secondary btn-small" style="margin-top:20px;" onclick="calcularNecessidades()">🔄 Recalcular</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- RELATÓRIO FÁBRICA -->
-    <section id="relatorioFabrica-section" class="content-section">
-        <div class="panel">
-            <h2>🏭 Relatório de Programação - Estilo Fábrica</h2>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Tipo de Relatório</label>
-                    <select id="relatorioTipo">
-                        <option value="todos">Todos os produtos programáveis</option>
-                        <option value="paredes">Paredes (CAD)</option>
-                        <option value="produtosFinais">Produtos Finais (Montagem)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Ordenar datas</label>
-                    <select id="ordenacaoDatas">
-                        <option value="crescente">Crescente</option>
-                        <option value="decrescente">Decrescente</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Agrupar por semana</label>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="agruparSemana">
-                        <span style="color:#475569;font-size:14px;">Ativar agrupamento semanal</span>
-                    </div>
-                </div>
-            </div>
-            <button class="btn" onclick="gerarRelatorioFabrica()">📊 Gerar Relatório</button>
-            
-            <div id="relatorioFabricaContainer" class="relatorio-tabela">
-                <p style="text-align:center;padding:40px;color:#64748b;">Clique em "Gerar Relatório" para visualizar a programação no estilo planilha.</p>
-            </div>
-        </div>
-    </section>
-</div>
-
-<script>
-// ======================== DADOS GLOBAIS ========================
-let produtos = [
-    { codigo: "1400", nome: "Concreto", categoria: "Insumo", unidade: "m³", composicao: [] },
-    { codigo: "1401", nome: "Armação", categoria: "Insumo", unidade: "kg", composicao: [] },
-    { codigo: "1402", nome: "Insert", categoria: "Insumo", unidade: "UN", composicao: [] },
-    { codigo: "1403", nome: "Janela", categoria: "Insumo", unidade: "UN", composicao: [] },
-    { codigo: "1404", nome: "Porta", categoria: "Insumo", unidade: "UN", composicao: [] },
-    { codigo: "1501", nome: "Parede com janela", categoria: "Parede", unidade: "UN", composicao: [{codigo:"1400",qtd:0.2},{codigo:"1401",qtd:50},{codigo:"1402",qtd:1},{codigo:"1403",qtd:1}] },
-    { codigo: "1502", nome: "Parede esquerda", categoria: "Parede", unidade: "UN", composicao: [{codigo:"1400",qtd:0.2},{codigo:"1401",qtd:50},{codigo:"1402",qtd:1}] },
-    { codigo: "1503", nome: "Parede direita", categoria: "Parede", unidade: "UN", composicao: [{codigo:"1400",qtd:0.2},{codigo:"1401",qtd:50},{codigo:"1402",qtd:1}] },
-    { codigo: "1504", nome: "Parede porta", categoria: "Parede", unidade: "UN", composicao: [{codigo:"1400",qtd:0.2},{codigo:"1401",qtd:50},{codigo:"1402",qtd:1},{codigo:"1404",qtd:1}] },
-    { codigo: "1900", nome: "Cela completa", categoria: "ProdutoFinal", unidade: "UN", composicao: [{codigo:"1501",qtd:1},{codigo:"1502",qtd:1},{codigo:"1503",qtd:1},{codigo:"1504",qtd:1}] },
-    { codigo: "1901", nome: "Passarela", categoria: "ProdutoFinal", unidade: "UN", composicao: [{codigo:"1503",qtd:2},{codigo:"1501",qtd:1}] }
-];
-
-let programacoes = [];
-let apontamentos = [];
-let usuarios = [];
-let setores = [
-    { id: "1", nome: "PCP", responsabilidade: "Planejamento e Controle de Produção" },
-    { id: "2", nome: "CAD", responsabilidade: "Desenho e Projeto" },
-    { id: "3", nome: "Montagem", responsabilidade: "Montagem de produtos" },
-    { id: "4", nome: "Concretagem", responsabilidade: "Concretagem de peças" }
-];
-
-// ======================== FUNÇÕES AUXILIARES ========================
-function getSemanaInicio(data) {
-    const d = new Date(data);
-    d.setDate(d.getDate() - d.getDay());
-    return d.toISOString().slice(0, 10);
-}
-
-function expandirNecessidades(codigo, qtd, mapa) {
-    const prod = produtos.find(p => p.codigo === codigo);
-    if (!prod) return;
-    if (prod.categoria === "Insumo") {
-        mapa.set(codigo, (mapa.get(codigo) || 0) + qtd);
-        return;
-    }
-    if (prod.composicao) {
-        prod.composicao.forEach(comp => {
-            expandirNecessidades(comp.codigo, comp.qtd * qtd, mapa);
-        });
-    }
-}
-
-function calcularNecessidadesTotais() {
-    const mapa = new Map();
-    programacoes.forEach(prog => {
-        const prod = produtos.find(p => p.codigo === prog.produtoCodigo);
-        if (prod && (prod.categoria === "ProdutoFinal" || prod.categoria === "Parede")) {
-            expandirNecessidades(prog.produtoCodigo, prog.quantidade, mapa);
-        }
-    });
-    return mapa;
-}
-
-function atualizarDashboardStats() {
-    const hoje = new Date().toISOString().slice(0, 10);
-    const totalHoje = apontamentos.filter(a => a.data === hoje).reduce((sum, a) => sum + a.quantidade, 0);
-    document.getElementById('totalProduzidoHoje').textContent = totalHoje;
-    
-    const inicioMes = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10);
-    const celasMes = programacoes.filter(p => p.data >= inicioMes && p.produtoCodigo === '1900').reduce((sum, p) => sum + p.quantidade, 0);
-    document.getElementById('totalCelasMes').textContent = celasMes;
-    
-    const totalParedes = programacoes.filter(p => {
-        const prod = produtos.find(pr => pr.codigo === p.produtoCodigo);
-        return prod && prod.categoria === 'Parede';
-    }).reduce((sum, p) => sum + p.quantidade, 0);
-    document.getElementById('totalParedes').textContent = totalParedes;
-    
-    document.getElementById('totalProgramacoes').textContent = programacoes.length;
-}
-
-function atualizarDashboardNeeds() {
-    const mapa = calcularNecessidadesTotais();
-    const container = document.getElementById('dashboardNeeds');
-    container.innerHTML = '';
-    mapa.forEach((qtd, codigo) => {
-        const prod = produtos.find(p => p.codigo === codigo);
-        if (prod && prod.categoria === 'Insumo') {
-            container.innerHTML += `<div class="needs-item"><span>${prod.nome}</span><span style="color:#f97316;font-weight:700;">${qtd.toFixed(2)} ${prod.unidade}</span></div>`;
-        }
-    });
-}
-
-// ======================== PRODUTOS ========================
-function salvarProduto() {
-    const nome = document.getElementById('produtoNome').value;
-    const codigo = document.getElementById('produtoCodigo').value;
-    const categoria = document.getElementById('produtoCategoria').value;
-    const unidade = document.getElementById('produtoUnidade').value;
-    
-    if (!nome || !codigo || !unidade) {
-        alert('Preencha todos os campos obrigatórios!');
-        return;
-    }
-    
-    if (produtos.find(p => p.codigo === codigo)) {
-        alert('Código já existe!');
-        return;
-    }
-    
-    produtos.push({ codigo, nome, categoria, unidade, composicao: [] });
-    atualizarTabelaProdutos();
-    popularSelectsDinamicos();
-    
-    document.getElementById('produtoNome').value = '';
-    document.getElementById('produtoCodigo').value = '';
-    document.getElementById('produtoUnidade').value = '';
-    
-    alert('Produto salvo com sucesso!');
-}
-
-function atualizarTabelaProdutos() {
-    const tbody = document.getElementById('tabelaProdutos');
-    tbody.innerHTML = '';
-    produtos.forEach(prod => {
-        const badgeClass = prod.categoria === 'Insumo' ? 'badge-insumo' : prod.categoria === 'Parede' ? 'badge-parede' : 'badge-produto';
-        const composicao = prod.composicao.length > 0 ? prod.composicao.map(c => `${c.codigo}x${c.qtd}`).join(', ') : '-';
-        tbody.innerHTML += `<tr>
-            <td style="font-family:monospace;font-weight:600;">${prod.codigo}</td>
-            <td style="font-weight:600;">${prod.nome}</td>
-            <td><span class="badge ${badgeClass}">${prod.categoria}</span></td>
-            <td>${prod.unidade}</td>
-            <td style="font-size:12px;color:#64748b;">${composicao}</td>
-        </tr>`;
-    });
-}
-
-// ======================== USUÁRIOS ========================
-function adicionarUsuario() {
-    const nome = document.getElementById('usuarioNome').value;
-    const email = document.getElementById('usuarioEmail').value;
-    const setor = document.getElementById('usuarioSetor').value;
-    
-    if (!nome || !email) {
-        alert('Preencha nome e email!');
-        return;
-    }
-    
-    usuarios.push({ id: Date.now().toString(), nome, email, setor });
-    atualizarTabelaUsuarios();
-    
-    document.getElementById('usuarioNome').value = '';
-    document.getElementById('usuarioEmail').value = '';
-    
-    alert('Usuário cadastrado com sucesso!');
-}
-
-function atualizarTabelaUsuarios() {
-    const tbody = document.getElementById('tabelaUsuarios');
-    tbody.innerHTML = '';
-    usuarios.forEach(user => {
-        tbody.innerHTML += `<tr>
-            <td style="font-weight:600;">${user.nome}</td>
-            <td>${user.email}</td>
-            <td><span class="badge badge-insumo">${user.setor}</span></td>
-        </tr>`;
-    });
-}
-
-// ======================== SETORES ========================
-function adicionarSetor() {
-    const nome = document.getElementById('setorNome').value;
-    const responsabilidade = document.getElementById('setorFuncao').value;
-    
-    if (!nome) {
-        alert('Preencha o nome do setor!');
-        return;
-    }
-    
-    setores.push({ id: Date.now().toString(), nome, responsabilidade });
-    atualizarListaSetores();
-    
-    document.getElementById('setorNome').value = '';
-    document.getElementById('setorFuncao').value = '';
-    
-    alert('Setor cadastrado com sucesso!');
-}
-
-function atualizarListaSetores() {
-    const container = document.getElementById('listaSetores');
-    container.innerHTML = '';
-    setores.forEach(setor => {
-        container.innerHTML += `<div class="sector-card">
-            <h3>${setor.nome}</h3>
-            <p>${setor.responsabilidade || 'Sem descrição'}</p>
-        </div>`;
-    });
-}
-
-// ======================== APONTAMENTOS ========================
-function registrarApontamento() {
-    const produtoCodigo = document.getElementById('apontamentoProduto').value;
-    const quantidade = parseFloat(document.getElementById('apontamentoQtd').value);
-    const setor = document.getElementById('apontamentoSetor').value;
-    const status = document.getElementById('apontamentoStatus').value;
-    
-    if (!produtoCodigo || !quantidade) {
-        alert('Preencha todos os campos!');
-        return;
-    }
-    
-    const prod = produtos.find(p => p.codigo === produtoCodigo);
-    apontamentos.unshift({
-        id: Date.now().toString(),
-        data: new Date().toISOString().slice(0, 10),
-        produtoCodigo,
-        quantidade,
-        setor,
-        status: status || 'pendente',
-        historicoStatus: [{
-            status: status || 'pendente',
-            setor: setor,
-            data: new Date().toISOString(),
-            usuario: 'Usuário'
-        }]
-    });
-    
-    atualizarListaApontamentos();
-    atualizarDashboardStats();
-    
-    document.getElementById('apontamentoQtd').value = '1';
-    
-    mostrarNotificacao('Apontamento registrado com sucesso!', 'success');
-}
-
-function atualizarListaApontamentos() {
-    const container = document.getElementById('listaApontamentos');
-    const filtro = document.getElementById('filtroStatus')?.value || 'todos';
-    container.innerHTML = '';
-    
-    let apontamentosFiltrados = apontamentos;
-    if (filtro !== 'todos') {
-        apontamentosFiltrados = apontamentos.filter(a => a.status === filtro);
-    }
-    
-    if (apontamentosFiltrados.length === 0) {
-        container.innerHTML = '<p style="color:#64748b;text-align:center;padding:20px;">Nenhum apontamento registrado.</p>';
-        return;
-    }
-    
-    const statusLabels = {
-        'pendente': { label: '⏳ Pendente', class: 'status-pendente' },
-        'em-andamento': { label: '🔄 Em Andamento', class: 'status-em-andamento' },
-        'concluido': { label: '✅ Concluído', class: 'status-concluido' },
-        'cancelado': { label: '❌ Cancelado', class: 'status-cancelado' }
-    };
-    
-    apontamentosFiltrados.forEach(ap => {
-        const prod = produtos.find(p => p.codigo === ap.produtoCodigo);
-        const statusInfo = statusLabels[ap.status] || statusLabels['pendente'];
-        
-        container.innerHTML += `<div class="apontamento-card" style="background:linear-gradient(135deg,#fff7ed,#ffedd5);border-left:5px solid #f97316;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:15px;">
-                <div style="flex:1;min-width:250px;">
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-                        <strong style="color:#0f172a;font-size:18px;">${prod?.nome || ap.produtoCodigo}</strong>
-                        <span class="status ${statusInfo.class}">${statusInfo.label}</span>
-                    </div>
-                    <div style="color:#64748b;font-size:13px;line-height:1.8;">
-                        <div>📅 <strong>Data:</strong> ${ap.data}</div>
-                        <div>🏭 <strong>Setor:</strong> ${ap.setor}</div>
-                        <div>📦 <strong>Quantidade:</strong> ${ap.quantidade} ${prod?.unidade || ''}</div>
-                        ${ap.historicoStatus && ap.historicoStatus.length > 1 ? `<div style="margin-top:10px;padding-top:10px;border-top:1px dashed #fcd34d;font-size:12px;">
-                            <strong>Histórico de Status:</strong>
-                            ${ap.historicoStatus.map(h => `<div style="color:#92400e;margin-top:5px;">• ${h.status} - ${h.setor} (${new Date(h.data).toLocaleDateString('pt-BR')})</div>`).join('')}
-                        </div>` : ''}
-                    </div>
-                </div>
-                <div class="apontamento-actions" style="flex-direction:column;gap:10px;min-width:200px;">
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <label style="font-size:12px;color:#64748b;font-weight:600;">Atualizar Status:</label>
-                        <select class="status-select" onchange="atualizarStatusApontamento('${ap.id}', this.value)" style="flex:1;">
-                            <option value="pendente" ${ap.status === 'pendente' ? 'selected' : ''}>⏳ Pendente</option>
-                            <option value="em-andamento" ${ap.status === 'em-andamento' ? 'selected' : ''}>🔄 Em Andamento</option>
-                            <option value="concluido" ${ap.status === 'concluido' ? 'selected' : ''}>✅ Concluído</option>
-                            <option value="cancelado" ${ap.status === 'cancelado' ? 'selected' : ''}>❌ Cancelado</option>
-                        </select>
-                    </div>
-                    <div style="display:flex;gap:8px;">
-                        <button class="btn btn-small" onclick="abrirModalQR('${ap.id}')" style="background:linear-gradient(135deg,#3b82f6,#2563eb);">📱 QR Code</button>
-                        <button class="btn btn-small btn-danger" onclick="removerApontamento('${ap.id}')" style="background:linear-gradient(135deg,#dc2626,#b91c1c);">🗑️</button>
-                    </div>
-                </div>
-            </div>
-        </div>`;
-    });
-}
-
-function atualizarStatusApontamento(id, novoStatus) {
-    const apontamento = apontamentos.find(a => a.id === id);
-    if (!apontamento) return;
-    
-    apontamento.status = novoStatus;
-    if (!apontamento.historicoStatus) {
-        apontamento.historicoStatus = [];
-    }
-    apontamento.historicoStatus.push({
-        status: novoStatus,
-        setor: apontamento.setor,
-        data: new Date().toISOString(),
-        usuario: 'Usuário'
-    });
-    
-    atualizarListaApontamentos();
-    
-    const statusLabels = {
-        'pendente': 'Pendente',
-        'em-andamento': 'Em Andamento',
-        'concluido': 'Concluído',
-        'cancelado': 'Cancelado'
-    };
-    
-    mostrarNotificacao(`Status atualizado para: ${statusLabels[novoStatus]}`, 'info');
-}
-
-function removerApontamento(id) {
-    if (confirm('Tem certeza que deseja remover este apontamento?')) {
-        apontamentos = apontamentos.filter(a => a.id !== id);
-        atualizarListaApontamentos();
-        atualizarDashboardStats();
-    }
-}
-
-function filtrarApontamentosPorStatus() {
-    atualizarListaApontamentos();
-}
-
-let apontamentoQRAtual = null;
-
-function abrirModalQR(id) {
-    const apontamento = apontamentos.find(a => a.id === id);
-    if (!apontamento) return;
-    
-    const prod = produtos.find(p => p.codigo === apontamento.produtoCodigo);
-    apontamentoQRAtual = apontamento;
-    
-    const urlEtapas = `${window.location.origin}${window.location.pathname}#etapas?id=${apontamento.id}`;
-    
-    const qrData = {
-        id: apontamento.id,
-        produto: prod?.nome || apontamento.produtoCodigo,
-        codigo: apontamento.produtoCodigo,
-        quantidade: apontamento.quantidade,
-        unidade: prod?.unidade || '',
-        setor: apontamento.setor,
-        status: apontamento.status,
-        data: apontamento.data,
-        url: urlEtapas
-    };
-    
-    document.getElementById('qrCodeContainer').innerHTML = '';
-    
-    new QRCode(document.getElementById('qrCodeContainer'), {
-        text: JSON.stringify(qrData),
-        width: 200,
-        height: 200,
-        colorDark: '#0f172a',
-        colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.H
-    });
-    
-    const statusLabels = {
-        'pendente': '⏳ Pendente',
-        'em-andamento': '🔄 Em Andamento',
-        'concluido': '✅ Concluído',
-        'cancelado': '❌ Cancelado'
-    };
-    
-    document.getElementById('qrProduto').textContent = `${prod?.nome || apontamento.produtoCodigo} (${apontamento.produtoCodigo})`;
-    document.getElementById('qrQuantidade').textContent = `${apontamento.quantidade} ${prod?.unidade || ''}`;
-    document.getElementById('qrSetor').textContent = apontamento.setor;
-    document.getElementById('qrStatus').textContent = statusLabels[apontamento.status] || apontamento.status;
-    document.getElementById('qrData').textContent = new Date(apontamento.data).toLocaleDateString('pt-BR');
-    document.getElementById('qrId').textContent = apontamento.id;
-    
-    document.getElementById('qrModal').classList.add('active');
-}
-
-function fecharModalQR() {
-    document.getElementById('qrModal').classList.remove('active');
-}
-
-function imprimirQRCode() {
-    const qrContent = document.getElementById('qrModal').querySelector('.qr-content');
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>QR Code - ${document.getElementById('qrProduto').textContent}</title>
-            <style>
-                body{font-family:'Poppins',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:20px;}
-                h2{color:#0f172a;margin-bottom:20px;}
-                .qr-info{background:#f8fafc;padding:20px;border-radius:14px;margin-top:20px;width:100%;max-width:350px;}
-                .qr-info p{margin:8px 0;font-size:14px;color:#475569;}
-                .qr-info strong{color:#0f172a;}
-            </style>
-        </head>
-        <body>
-            <h2>📱 QR Code do Apontamento</h2>
-            ${document.getElementById('qrCodeContainer').innerHTML}
-            <div class="qr-info">
-                <p><strong>Produto:</strong> ${document.getElementById('qrProduto').textContent}</p>
-                <p><strong>Quantidade:</strong> ${document.getElementById('qrQuantidade').textContent}</p>
-                <p><strong>Setor:</strong> ${document.getElementById('qrSetor').textContent}</p>
-                <p><strong>Status:</strong> ${document.getElementById('qrStatus').textContent}</p>
-                <p><strong>Data:</strong> ${document.getElementById('qrData').textContent}</p>
-                <p><strong>ID:</strong> ${document.getElementById('qrId').textContent}</p>
-            </div>
-        </body>
-        </html>
-    `);
-    printWindow.document.close();
-    printWindow.print();
-}
-
-function copiarIDQR() {
-    const id = document.getElementById('qrId').textContent;
-    navigator.clipboard.writeText(id).then(() => {
-        mostrarNotificacao('ID copiado para a área de transferência!', 'success');
-    }).catch(() => {
-        mostrarNotificacao('Erro ao copiar ID', 'error');
-    });
-}
-
-function mostrarNotificacao(mensagem, tipo = 'success') {
-    const toast = document.getElementById('toast');
-    const toastIcon = document.getElementById('toastIcon');
-    const toastMessage = document.getElementById('toastMessage');
-    
-    const icones = {
-        success: '✅',
-        error: '❌',
-        warning: '⚠️',
-        info: 'ℹ️'
-    };
-    
-    toast.className = `toast ${tipo}`;
-    toastIcon.textContent = icones[tipo] || 'ℹ️';
-    toastMessage.textContent = mensagem;
-    
-    toast.classList.add('show');
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
-}
-
-document.addEventListener('click', function(e) {
-    const modal = document.getElementById('qrModal');
-    if (e.target === modal) {
-        fecharModalQR();
-    }
-});
-
-// ======================== TELA DE ETAPAS (QR CODE) ========================
-function abrirTelaEtapas() {
-    if (!apontamentoQRAtual) return;
-    
-    const apontamento = apontamentoQRAtual;
-    const prod = produtos.find(p => p.codigo === apontamento.produtoCodigo);
-    
-    document.getElementById('etapasInfo').innerHTML = `
-        <div style="background:linear-gradient(135deg,#fff7ed,#ffedd5);padding:20px;border-radius:14px;border:2px solid #fcd34d;">
-            <h4 style="margin:0 0 10px 0;color:#92400e;">${prod?.nome || apontamento.produtoCodigo}</h4>
-            <p style="margin:5px 0;color:#64748b;font-size:13px;">📦 Quantidade: ${apontamento.quantidade} ${prod?.unidade || ''}</p>
-            <p style="margin:5px 0;color:#64748b;font-size:13px;">🏭 Setor: ${apontamento.setor}</p>
-            <p style="margin:5px 0;color:#64748b;font-size:13px;">📅 Data: ${new Date(apontamento.data).toLocaleDateString('pt-BR')}</p>
-        </div>
-    `;
-    
-    const etapas = [
-        { id: 'cad', nome: 'CAD - Desenho Técnico', setor: 'CAD' },
-        { id: 'corte', nome: 'Corte de Peças', setor: 'Corte' },
-        { id: 'montagem', nome: 'Montagem', setor: 'Montagem' },
-        { id: 'concretagem', nome: 'Concretagem', setor: 'Concretagem' },
-        { id: 'acabamento', nome: 'Acabamento', setor: 'Acabamento' },
-        { id: 'qualidade', nome: 'Controle de Qualidade', setor: 'Qualidade' }
-    ];
-    
-    const statusOrder = { 'pendente': 0, 'em-andamento': 1, 'concluido': 2 };
-    const statusAtual = statusOrder[apontamento.status] || 0;
-    
-    let etapasHtml = '';
-    etapas.forEach((etapa, index) => {
-        let classeEtapa = '';
-        let statusEtapa = 'pendente';
-        
-        if (index < statusAtual) {
-            classeEtapa = 'concluida';
-            statusEtapa = 'concluido';
-        } else if (index === statusAtual) {
-            classeEtapa = 'ativa';
-            statusEtapa = apontamento.status;
-        }
-        
-        const statusLabels = {
-            'pendente': '⏳ Pendente',
-            'em-andamento': '🔄 Em Andamento',
-            'concluido': '✅ Concluído'
+    <!-- JAVASCRIPT -->
+    <script>
+        // ========================================
+        // DADOS GLOBAIS
+        // ========================================
+        let sequenciais = {
+            dbn: 1,
+            serArm: 1,
+            cadTeto: 1,
+            cadPis: 1,
+            cadPar01: 1,
+            cadPar02: 1,
+            cadPar03: 1,
+            cadPar04: 1
         };
         
-        etapasHtml += `<div class="etapa-item ${classeEtapa}">
-            <div class="etapa-number">${index + 1}</div>
-            <div class="etapa-info">
-                <h4>${etapa.nome}</h4>
-                <p>🏭 ${etapa.setor}</p>
-            </div>
-            <span class="status ${classeEtapa === 'concluida' ? 'finalizado' : classeEtapa === 'ativa' ? 'andamento' : 'pendente'}" style="${classeEtapa === 'concluida' ? 'background:#dcfce7;color:#15803d;' : classeEtapa === 'ativa' ? 'background:#dbeafe;color:#1d4ed8;' : 'background:#f1f5f9;color:#64748b;'}">${statusLabels[statusEtapa]}</span>
-        </div>`;
-    });
-    
-    document.getElementById('etapasTimeline').innerHTML = etapasHtml;
-    document.getElementById('etapasSetor').value = apontamento.setor;
-    document.getElementById('etapasStatus').value = apontamento.status;
-    
-    document.getElementById('etapasScreen').classList.add('active');
-}
-
-function fecharTelaEtapas() {
-    document.getElementById('etapasScreen').classList.remove('active');
-}
-
-function atualizarEtapaQR() {
-    if (!apontamentoQRAtual) return;
-    
-    const novoSetor = document.getElementById('etapasSetor').value;
-    const novoStatus = document.getElementById('etapasStatus').value;
-    
-    const apontamento = apontamentos.find(a => a.id === apontamentoQRAtual.id);
-    if (apontamento) {
-        apontamento.setor = novoSetor;
-        apontamento.status = novoStatus;
-        
-        if (!apontamento.historicoStatus) {
-            apontamento.historicoStatus = [];
-        }
-        apontamento.historicoStatus.push({
-            status: novoStatus,
-            setor: novoSetor,
-            data: new Date().toISOString(),
-            usuario: 'QR Code'
-        });
-        
-        atualizarListaApontamentos();
-        abrirTelaEtapas();
-        
-        mostrarNotificacao('Etapa atualizada com sucesso!', 'success');
-    }
-}
-
-// Verificar se há parâmetro de etapas na URL ao carregar
-function verificarURLParaEtapas() {
-    const hash = window.location.hash;
-    if (hash.startsWith('#etapas')) {
-        const params = new URLSearchParams(hash.replace('#etapas?', ''));
-        const id = params.get('id');
-        
-        if (id) {
-            const apontamento = apontamentos.find(a => a.id === id);
-            if (apontamento) {
-                apontamentoQRAtual = apontamento;
-                setTimeout(() => {
-                    abrirTelaEtapas();
-                    mostrarNotificacao('Apontamento carregado via QR Code!', 'info');
-                }, 500);
-            } else {
-                mostrarNotificacao('Apontamento não encontrado!', 'error');
-            }
-        }
-    }
-}
-
-// ======================== PROGRAMAÇÃO ========================
-function adicionarProgramacao() {
-    const data = document.getElementById('progData').value;
-    const produtoCodigo = document.getElementById('progProduto').value;
-    const quantidade = parseInt(document.getElementById('progQuantidade').value);
-    
-    if (!data || !produtoCodigo || !quantidade) {
-        alert('Preencha todos os campos!');
-        return;
-    }
-    
-    const prod = produtos.find(p => p.codigo === produtoCodigo);
-    if (!prod || (prod.categoria !== 'ProdutoFinal' && prod.categoria !== 'Parede')) {
-        alert('Programar apenas Produtos Finais ou Paredes!');
-        return;
-    }
-    
-    programacoes.push({ id: Date.now().toString(), data, produtoCodigo, quantidade });
-    atualizarTabelaProgramacao();
-    atualizarInterfaceNecessidades();
-    atualizarDashboardStats();
-    
-    document.getElementById('progData').value = '';
-    document.getElementById('progQuantidade').value = '1';
-    
-    alert('Programação adicionada com sucesso!');
-}
-
-function removerProgramacao(id) {
-    programacoes = programacoes.filter(p => p.id !== id);
-    atualizarTabelaProgramacao();
-    atualizarInterfaceNecessidades();
-    atualizarDashboardStats();
-}
-
-function atualizarTabelaProgramacao() {
-    const tbody = document.getElementById('tabelaProgramacao');
-    tbody.innerHTML = '';
-    programacoes.forEach(prog => {
-        const prod = produtos.find(p => p.codigo === prog.produtoCodigo);
-        tbody.innerHTML += `<tr>
-            <td>${prog.data}</td>
-            <td style="font-weight:600;">${prod?.nome || prog.produtoCodigo}</td>
-            <td>${prog.quantidade}</td>
-            <td><button class="remover-btn" onclick="removerProgramacao('${prog.id}')">🗑️ Remover</button></td>
-        </tr>`;
-    });
-}
-
-function atualizarInterfaceNecessidades() {
-    const container = document.getElementById('needsContainer');
-    const needsDiv = document.getElementById('needsList');
-    const mapa = calcularNecessidadesTotais();
-    
-    if (mapa.size === 0) {
-        container.style.display = 'none';
-        return;
-    }
-    
-    container.style.display = 'block';
-    needsDiv.innerHTML = '';
-    mapa.forEach((qtd, codigo) => {
-        const prod = produtos.find(p => p.codigo === codigo);
-        if (prod && prod.categoria === 'Insumo') {
-            needsDiv.innerHTML += `<div class="needs-item"><span>${prod.nome}</span><span style="color:#f97316;font-weight:700;">${qtd.toFixed(2)} ${prod.unidade}</span></div>`;
-        }
-    });
-}
-
-function calcularNecessidades() {
-    atualizarInterfaceNecessidades();
-    alert('Necessidades recalculadas!');
-}
-
-// ======================== RELATÓRIO FÁBRICA ========================
-function gerarRelatorioFabrica() {
-    const tipo = document.getElementById('relatorioTipo').value;
-    const ordenacao = document.getElementById('ordenacaoDatas').value;
-    const agruparSemana = document.getElementById('agruparSemana').checked;
-    const container = document.getElementById('relatorioFabricaContainer');
-    
-    if (!programacoes.length) {
-        container.innerHTML = '<p style="text-align:center;padding:40px;color:#64748b;">Nenhuma programação registrada. Cadastre programações na aba "Programação".</p>';
-        return;
-    }
-    
-    let produtosFiltrados = produtos;
-    if (tipo === 'paredes') {
-        produtosFiltrados = produtos.filter(p => p.categoria === 'Parede');
-    } else if (tipo === 'produtosFinais') {
-        produtosFiltrados = produtos.filter(p => p.categoria === 'ProdutoFinal');
-    } else {
-        produtosFiltrados = produtos.filter(p => p.categoria === 'Parede' || p.categoria === 'ProdutoFinal');
-    }
-    
-    if (produtosFiltrados.length === 0) {
-        container.innerHTML = '<p style="text-align:center;padding:40px;color:#64748b;">Nenhum produto encontrado para o tipo selecionado.</p>';
-        return;
-    }
-    
-    let datas = [...new Set(programacoes.map(p => p.data))];
-    if (ordenacao === 'crescente') {
-        datas.sort((a, b) => new Date(a) - new Date(b));
-    } else {
-        datas.sort((a, b) => new Date(b) - new Date(a));
-    }
-    
-    let colunas = datas;
-    if (agruparSemana) {
-        const semanasMap = new Map();
-        datas.forEach(d => {
-            const key = getSemanaInicio(d);
-            if (!semanasMap.has(key)) semanasMap.set(key, []);
-            semanasMap.get(key).push(d);
-        });
-        colunas = Array.from(semanasMap.keys()).sort();
-    }
-    
-    const matriz = {};
-    produtosFiltrados.forEach(prod => {
-        matriz[prod.codigo] = {};
-        colunas.forEach(col => {
-            matriz[prod.codigo][col] = 0;
-        });
-    });
-    
-    programacoes.forEach(prog => {
-        const prod = produtos.find(p => p.codigo === prog.produtoCodigo);
-        if (!prod || (tipo === 'paredes' && prod.categoria !== 'Parede') || (tipo === 'produtosFinais' && prod.categoria !== 'ProdutoFinal')) return;
-        
-        let dataAlvo = prog.data;
-        if (agruparSemana) {
-            dataAlvo = getSemanaInicio(prog.data);
-        }
-        
-        if (matriz[prog.produtoCodigo] && matriz[prog.produtoCodigo][dataAlvo] !== undefined) {
-            matriz[prog.produtoCodigo][dataAlvo] += prog.quantidade;
-        }
-    });
-    
-    let html = '<div style="overflow-x:auto;"><table style="border-collapse:collapse;width:100%;">';
-    html += '<thead><tr><th style="background:linear-gradient(135deg,#f97316,#ea580c);color:white;padding:14px;text-align:left;">Produto / Data</th>';
-    colunas.forEach(col => {
-        const titulo = agruparSemana ? `Semana ${col}` : col;
-        html += `<th style="background:linear-gradient(135deg,#f97316,#ea580c);color:white;padding:14px;">${titulo}</th>`;
-    });
-    html += '</tr></thead><tbody>';
-    
-    produtosFiltrados.forEach(prod => {
-        html += `<tr style="background:#fff7ed;"><td style="font-weight:700;padding:14px;border:1px solid #e2e8f0;">${prod.nome} (${prod.codigo})</td>`;
-        colunas.forEach(col => {
-            const qtd = matriz[prod.codigo][col] || 0;
-            if (qtd > 0) {
-                const conteudo = qtd === 1 ? prod.codigo : `${prod.codigo}x${qtd}`;
-                html += `<td class="celula-prod" style="border:1px solid #e2e8f0;">${conteudo}</td>`;
-            } else {
-                html += `<td style="border:1px solid #e2e8f0;color:#cbd5e1;">—</td>`;
-            }
-        });
-        html += '</tr>';
-    });
-    
-    html += '</tbody></table></div>';
-    if (agruparSemana) {
-        html += '<p style="margin-top:15px;font-size:12px;color:#64748b;">* Agrupamento por semana (domingo a sábado). Quantidades somadas.</p>';
-    }
-    container.innerHTML = html;
-}
-
-// ======================== POPULAR SELECTS ========================
-function popularSelectsDinamicos() {
-    const selectApont = document.getElementById('apontamentoProduto');
-    const selectProg = document.getElementById('progProduto');
-    
-    const opcoes = produtos.filter(p => p.categoria === 'Parede' || p.categoria === 'ProdutoFinal');
-    const optionsHtml = opcoes.map(p => `<option value="${p.codigo}">${p.nome} (${p.codigo})</option>`).join('');
-    
-    if (selectApont) selectApont.innerHTML = optionsHtml;
-    if (selectProg) selectProg.innerHTML = optionsHtml;
-}
-
-// ======================== INICIALIZAÇÃO ========================
-document.addEventListener('DOMContentLoaded', () => {
-    // Data atual
-    const hoje = new Date();
-    document.getElementById('dataAtual').textContent = hoje.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    
-    // Verificar se veio de QR Code
-    verificarURLParaEtapas();
-    
-    // Escutar mudanças no hash para navegação via QR Code
-    window.addEventListener('hashchange', verificarURLParaEtapas);
-    
-    // Navegação
-    const links = document.querySelectorAll('.nav-link');
-    const sections = document.querySelectorAll('.content-section');
-    const subtitles = {
-        dashboard: 'Visão geral da produção',
-        producao: 'Controle de produção',
-        relatorio: 'Relatórios diários',
-        apontamentos: 'Registre a produção em tempo real',
-        programacao: 'Planeje a produção futura',
-        relatorioFabrica: 'Relatório estilo planilha de fábrica',
-        produtos: 'Gerencie seus produtos e composições',
-        usuarios: 'Gerencie os usuários do sistema',
-        setores: 'Cadastre os setores da empresa'
-    };
-    
-    links.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const sectionName = link.dataset.section;
-            const target = document.getElementById(sectionName + '-section');
-            
-            sections.forEach(s => s.style.display = 'none');
-            links.forEach(l => l.classList.remove('active'));
-            
-            if (target) {
-                target.style.display = 'block';
-                link.classList.add('active');
-                document.getElementById('headerSubtitle').textContent = subtitles[sectionName] || '';
-            }
-            
-            if (sectionName === 'relatorioFabrica') {
-                setTimeout(gerarRelatorioFabrica, 100);
-            }
-        });
-    });
-    
-    // Inicializar
-    popularSelectsDinamicos();
-    atualizarTabelaProdutos();
-    atualizarListaSetores();
-    atualizarTabelaProgramacao();
-    atualizarInterfaceNecessidades();
-    atualizarDashboardStats();
-    atualizarDashboardNeeds();
-    
-    // Gráficos
-    const prodCtx = document.getElementById('productionChart').getContext('2d');
-    new Chart(prodCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
-            datasets: [{
-                label: 'Planejado',
-                data: [5, 8, 6, 9, 7, 4, 3],
-                backgroundColor: 'rgba(249, 115, 22, 0.8)',
-                borderRadius: 8
-            }, {
-                label: 'Realizado',
-                data: [4, 7, 5, 8, 6, 3, 2],
-                backgroundColor: 'rgba(148, 163, 184, 0.8)',
-                borderRadius: 8
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'top' }
-            },
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
-    });
-    
-    const distCtx = document.getElementById('distributionChart').getContext('2d');
-    new Chart(distCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Insumos', 'Paredes', 'Produtos Finais'],
-            datasets: [{
-                data: [
-                    produtos.filter(p => p.categoria === 'Insumo').length,
-                    produtos.filter(p => p.categoria === 'Parede').length,
-                    produtos.filter(p => p.categoria === 'ProdutoFinal').length
-                ],
-                backgroundColor: ['rgba(249, 115, 22, 0.8)', 'rgba(59, 130, 246, 0.8)', 'rgba(168, 85, 247, 0.8)'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'bottom' }
-            }
-        }
-    });
-    
-    // Dados de exemplo se vazio
-    if (programacoes.length === 0) {
-        programacoes = [
-            { id: "1", data: "2026-01-15", produtoCodigo: "1501", quantidade: 1 },
-            { id: "2", data: "2026-01-16", produtoCodigo: "1502", quantidade: 2 },
-            { id: "3", data: "2026-01-17", produtoCodigo: "1900", quantidade: 1 },
-            { id: "4", data: "2026-01-18", produtoCodigo: "1901", quantidade: 1 },
-            { id: "5", data: "2026-01-22", produtoCodigo: "1503", quantidade: 1 },
-            { id: "6", data: "2026-01-23", produtoCodigo: "1504", quantidade: 1 }
+        let apontamentos = [];
+        let produtos = [
+            { codigo: '1900', nome: 'Cela Completa', categoria: 'ProdutoFinal' },
+            { codigo: '1901', nome: 'Passarela', categoria: 'ProdutoFinal' },
+            { codigo: '1501', nome: 'Parede com Janela', categoria: 'Parede' },
+            { codigo: '1502', nome: 'Parede Esquerda', categoria: 'Parede' },
+            { codigo: '1503', nome: 'Parede Direita', categoria: 'Parede' },
+            { codigo: '1504', nome: 'Parede Porta', categoria: 'Parede' }
         ];
-        atualizarTabelaProgramacao();
-        atualizarInterfaceNecessidades();
-        atualizarDashboardStats();
-    }
-});
-</script>
+        
+        let processoAtual = null;
+        let leituraQrCode = null;
+        let html5QrcodeScanner = null;
+
+        // ========================================
+        // FUNÇÕES AUXILIARES
+        // ========================================
+        function gerarCodigoDBN() {
+            return `DBN-${String(sequenciais.dbn).padStart(3, '0')}`;
+        }
+        
+        function gerarCodigoSER() {
+            return `SER-ARM-${String(sequenciais.serArm).padStart(3, '0')}`;
+        }
+        
+        function gerarCodigoCAD(tipo) {
+            const tipos = {
+                'TETO': { seq: 'cadTeto', prefix: 'CAD-TETO' },
+                'PISO': { seq: 'cadPis', prefix: 'CAD-PIS' },
+                'PAREDE01': { seq: 'cadPar01', prefix: 'CAD-PAR01' },
+                'PAREDE02': { seq: 'cadPar02', prefix: 'CAD-PAR02' },
+                'PAREDE03': { seq: 'cadPar03', prefix: 'CAD-PAR03' },
+                'PAREDE04': { seq: 'cadPar04', prefix: 'CAD-PAR04' }
+            };
+            
+            const config = tipos[tipo];
+            if (!config) return '';
+            
+            return `${config.prefix}-${String(sequenciais[config.seq]).padStart(3, '0')}`;
+        }
+        
+        function incrementarSequencialCAD(tipo) {
+            const tipos = {
+                'TETO': 'cadTeto',
+                'PISO': 'cadPis',
+                'PAREDE01': 'cadPar01',
+                'PAREDE02': 'cadPar02',
+                'PAREDE03': 'cadPar03',
+                'PAREDE04': 'cadPar04'
+            };
+            
+            if (tipos[tipo]) {
+                sequenciais[tipos[tipo]]++;
+                salvarSequenciais();
+            }
+        }
+        
+        function salvarSequenciais() {
+            localStorage.setItem('dbn_sequenciais', JSON.stringify(sequenciais));
+        }
+        
+        function carregarSequenciais() {
+            const salvos = localStorage.getItem('dbn_sequenciais');
+            if (salvos) {
+                sequenciais = JSON.parse(salvos);
+            }
+        }
+        
+        function getDataHoraAtual() {
+            const now = new Date();
+            return {
+                data: now.toISOString().split('T')[0],
+                hora: now.toTimeString().split(' ')[0].slice(0, 5),
+                completo: now.toLocaleString('pt-BR')
+            };
+        }
+        
+        function mostrarNotificacao(mensagem, tipo = 'success') {
+            const toast = document.getElementById('toast');
+            const icones = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            
+            document.getElementById('toastIcon').textContent = icones[tipo] || 'ℹ️';
+            document.getElementById('toastMessage').textContent = mensagem;
+            toast.className = `toast ${tipo} show`;
+            
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        function salvarApontamentos() {
+            localStorage.setItem('dbn_apontamentos', JSON.stringify(apontamentos));
+        }
+        
+        function carregarApontamentos() {
+            const salvos = localStorage.getItem('dbn_apontamentos');
+            if (salvos) {
+                apontamentos = JSON.parse(salvos);
+            }
+        }
+
+        // ========================================
+        // SERRALHERIA
+        // ========================================
+        function iniciarProcessoSerralheria() {
+            const produto = document.getElementById('serraProduto').value;
+            const quantidade = parseInt(document.getElementById('serraQuantidade').value);
+            const responsavel = document.getElementById('serraResponsavel').value;
+            
+            if (!produto || !responsavel) {
+                mostrarNotificacao('Preencha todos os campos!', 'error');
+                return;
+            }
+            
+            const codigoDBN = gerarCodigoDBN();
+            const codigoSER = gerarCodigoSER();
+            const dataHora = getDataHoraAtual();
+            
+            processoAtual = {
+                id: codigoDBN,
+                codigoSER: codigoSER,
+                codigoDBN: codigoDBN,
+                produto: produto,
+                quantidade: quantidade,
+                responsavelSerra: responsavel,
+                dataInicio: dataHora.data,
+                horaInicio: dataHora.hora,
+                status: 'serralheria',
+                etapas: [{
+                    setor: 'Serralheria',
+                    status: 'em-andamento',
+                    data: dataHora.data,
+                    hora: dataHora.hora,
+                    responsavel: responsavel
+                }]
+            };
+            
+            sequenciais.dbn++;
+            sequenciais.serArm++;
+            salvarSequenciais();
+            
+            // Exibir resultado
+            document.getElementById('serraCodigoExibido').textContent = codigoSER;
+            document.getElementById('serraResultado').style.display = 'block';
+            
+            // Gerar QR Code
+            const qrData = JSON.stringify({
+                id: codigoDBN,
+                codigoSER: codigoSER,
+                produto: produto,
+                quantidade: quantidade,
+                tipo: 'serralheria'
+            });
+            
+            const qrContainer = document.getElementById('serraQRCode');
+            qrContainer.innerHTML = '<p style="color:var(--gray);">Gerando QR Code...</p>';
+            
+            // Aguardar elemento estar visível e renderizar
+            setTimeout(() => {
+                qrContainer.innerHTML = '';
+                
+                if (typeof QRCode !== 'undefined') {
+                    try {
+                        const qrCodeObj = new QRCode(qrContainer, {
+                            text: qrData,
+                            width: 200,
+                            height: 200,
+                            colorDark: '#0f172a',
+                            colorLight: '#ffffff',
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                        console.log('✅ QR Code gerado com sucesso!', qrData);
+                    } catch (err) {
+                        console.error('Erro ao gerar QR Code:', err);
+                        qrContainer.innerHTML = `<p style="color:red;">Erro: ${err.message}</p>`;
+                    }
+                } else {
+                    console.error('❌ Biblioteca QRCode não carregada');
+                    // Fallback: usar API do Google Charts como backup
+                    qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData)}" alt="QR Code" style="width:200px;height:200px;">`;
+                }
+            }, 300);
+            
+            mostrarNotificacao('Processo iniciado com sucesso!', 'success');
+        }
+        
+        function imprimirQRSerralheria() {
+            if (!processoAtual) return;
+            
+            const qrData = JSON.stringify({
+                id: processoAtual.codigoDBN,
+                codigoSER: processoAtual.codigoSER,
+                produto: processoAtual.produto,
+                quantidade: processoAtual.quantidade,
+                tipo: 'serralheria'
+            });
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>QR Code - ${processoAtual.codigoSER}</title>
+                    <style>
+                        body{font-family:'Poppins',sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:20px;}
+                        h2{color:#0f172a;margin-bottom:10px;}
+                        .code{font-family:monospace;font-size:32px;font-weight:700;color:#f97316;margin:20px 0;}
+                        .qr-img{margin:20px 0;border:2px solid #e2e8f0;border-radius:16px;padding:10px;background:white;}
+                        .info{background:#f8fafc;padding:20px;border-radius:14px;margin-top:20px;width:100%;max-width:350px;}
+                        .info p{margin:8px 0;font-size:14px;color:#475569;}
+                    </style>
+                </head>
+                <body>
+                    <h2>🔩 DBN ERP - Serralheria</h2>
+                    <div class="code">${processoAtual.codigoSER}</div>
+                    <img class="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData)}" alt="QR Code" width="200" height="200">
+                    <div class="info">
+                        <p><strong>Produto:</strong> ${processoAtual.produto}</p>
+                        <p><strong>Quantidade:</strong> ${processoAtual.quantidade}</p>
+                        <p><strong>Data:</strong> ${processoAtual.dataInicio}</p>
+                        <p><strong>Responsável:</strong> ${processoAtual.responsavelSerra}</p>
+                        <p><strong>ID DBN:</strong> ${processoAtual.codigoDBN}</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            setTimeout(() => printWindow.print(), 500);
+        }
+        
+        function finalizarSerralheria() {
+            if (!processoAtual) return;
+            
+            processoAtual.status = 'cad';
+            processoAtual.etapas[0].status = 'concluido';
+            processoAtual.etapas[0].horaFim = getDataHoraAtual().hora;
+            
+            apontamentos.push(processoAtual);
+            salvarApontamentos();
+            
+            document.getElementById('serraResultado').style.display = 'none';
+            document.getElementById('serraProduto').value = '';
+            document.getElementById('serraResponsavel').value = '';
+            document.getElementById('serraQuantidade').value = '1';
+            
+            processoAtual = null;
+            
+            atualizarDashboard();
+            atualizarSerraProcessos();
+            mostrarNotificacao('Enviado para CAD com sucesso!', 'success');
+        }
+        
+        function atualizarSerraProcessos() {
+            const container = document.getElementById('serraProcessos');
+            const emAndamento = apontamentos.filter(a => a.status === 'serralheria' || a.status === 'cad');
+            
+            if (emAndamento.length === 0) {
+                container.innerHTML = '<p style="color:var(--gray);text-align:center;padding:20px;">Nenhum processo em andamento.</p>';
+                return;
+            }
+            
+            container.innerHTML = emAndamento.map(a => `
+                <div class="timeline-item ${a.status === 'concluido' ? 'concluido' : 'em-andamento'}">
+                    <strong>${a.codigoSER}</strong> - ${a.produto}
+                    <div style="font-size:12px;color:var(--gray);margin-top:5px;">
+                        ${a.status === 'serralheria' ? '🔩 Serralheria' : '📐 CAD'} • ${a.dataInicio}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ========================================
+        // CAD
+        // ========================================
+        function iniciarLeituraQR() {
+            document.getElementById('cadScannerContainer').style.display = 'block';
+            document.getElementById('cadLeituraInfo').style.display = 'none';
+            
+            html5QrcodeScanner = new Html5Qrcode("qr-reader");
+            
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                onScanSuccess,
+                onScanFailure
+            ).catch(err => {
+                mostrarNotificacao('Erro ao iniciar câmera: ' + err, 'error');
+            });
+        }
+        
+        function onScanSuccess(decodedText, decodedResult) {
+            try {
+                leituraQrCode = JSON.parse(decodedText);
+                
+                // Parar leitura
+                pararLeituraQR();
+                
+                // Preencher informações
+                document.getElementById('cadCodigoLido').textContent = leituraQrCode.codigoSER || decodedText;
+                
+                const dataHora = getDataHoraAtual();
+                document.getElementById('cadData').value = dataHora.data;
+                document.getElementById('cadHora').value = dataHora.hora;
+                document.getElementById('cadHoraLeitura').value = dataHora.completo;
+                document.getElementById('cadCodigo').value = '';
+                document.getElementById('cadForma').value = '';
+                document.getElementById('cadObs').value = '';
+                document.getElementById('cadResponsavel').value = '';
+                
+                document.getElementById('cadScannerContainer').style.display = 'none';
+                document.getElementById('cadLeituraInfo').style.display = 'block';
+                
+                mostrarNotificacao('QR Code lido com sucesso!', 'success');
+            } catch (e) {
+                mostrarNotificacao('QR Code inválido!', 'error');
+            }
+        }
+        
+        function onScanFailure(error) {
+            // Silencioso - erros de leitura são comuns
+        }
+        
+        function pararLeituraQR() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    html5QrcodeScanner.clear();
+                }).catch(err => console.error(err));
+            }
+            document.getElementById('cadScannerContainer').style.display = 'none';
+        }
+        
+        function atualizarCodigoCAD() {
+            const forma = document.getElementById('cadForma').value;
+            if (forma) {
+                document.getElementById('cadCodigo').value = gerarCodigoCAD(forma);
+            } else {
+                document.getElementById('cadCodigo').value = '';
+            }
+        }
+        
+        function registrarCAD() {
+            const forma = document.getElementById('cadForma').value;
+            const codigoCAD = document.getElementById('cadCodigo').value;
+            const data = document.getElementById('cadData').value;
+            const hora = document.getElementById('cadHora').value;
+            const horaLeitura = document.getElementById('cadHoraLeitura').value;
+            const obs = document.getElementById('cadObs').value;
+            const responsavel = document.getElementById('cadResponsavel').value;
+            
+            if (!forma || !responsavel || !leituraQrCode) {
+                mostrarNotificacao('Preencha todos os campos!', 'error');
+                return;
+            }
+            
+            // Encontrar o apontamento
+            const index = apontamentos.findIndex(a => a.codigoDBN === leituraQrCode.id);
+            
+            if (index === -1) {
+                // Criar novo apontamento só do CAD
+                const novoApontamento = {
+                    id: leituraQrCode.id,
+                    codigoSER: leituraQrCode.codigoSER,
+                    codigoDBN: leituraQrCode.id,
+                    codigoCAD: codigoCAD,
+                    produto: leituraQrCode.produto,
+                    status: 'concluido',
+                    etapas: [{
+                        setor: 'CAD',
+                        forma: forma,
+                        codigoCAD: codigoCAD,
+                        status: 'concluido',
+                        data: data,
+                        hora: hora,
+                        horaLeitura: horaLeitura,
+                        observacoes: obs,
+                        responsavel: responsavel
+                    }]
+                };
+                apontamentos.push(novoApontamento);
+            } else {
+                // Atualizar existente
+                apontamentos[index].status = 'concluido';
+                apontamentos[index].codigoCAD = codigoCAD;
+                apontamentos[index].etapas.push({
+                    setor: 'CAD',
+                    forma: forma,
+                    codigoCAD: codigoCAD,
+                    status: 'concluido',
+                    data: data,
+                    hora: hora,
+                    horaLeitura: horaLeitura,
+                    observacoes: obs,
+                    responsavel: responsavel
+                });
+            }
+            
+            // Incrementar sequencial CAD
+            incrementarSequencialCAD(forma);
+            
+            salvarApontamentos();
+            
+            // Limpar formulário
+            document.getElementById('cadForma').value = '';
+            document.getElementById('cadObs').value = '';
+            document.getElementById('cadResponsavel').value = '';
+            document.getElementById('cadLeituraInfo').style.display = 'none';
+            leituraQrCode = null;
+            
+            atualizarDashboard();
+            atualizarCadRegistros();
+            mostrarNotificacao('CAD registrado com sucesso!', 'success');
+        }
+        
+        function atualizarCadRegistros() {
+            const container = document.getElementById('cadRegistros');
+            const cadRegistros = apontamentos.filter(a => a.etapas.some(e => e.setor === 'CAD'));
+            
+            if (cadRegistros.length === 0) {
+                container.innerHTML = '<p style="color:var(--gray);text-align:center;padding:20px;">Nenhum registro CAD.</p>';
+                return;
+            }
+            
+            container.innerHTML = '<table>' +
+                '<thead><tr><th>Código</th><th>Forma</th><th>CAD</th><th>Responsável</th><th>Data</th></tr></thead>' +
+                '<tbody>' +
+                cadRegistros.map(a => {
+                    const etapaCAD = a.etapas.find(e => e.setor === 'CAD');
+                    return `<tr>
+                        <td style="font-family:monospace;font-weight:600;">${a.codigoSER}</td>
+                        <td>${etapaCAD?.forma || '-'}</td>
+                        <td><span class="badge badge-insumo">${etapaCAD?.codigoCAD || '-'}</span></td>
+                        <td>${etapaCAD?.responsavel || '-'}</td>
+                        <td>${etapaCAD?.data || '-'} ${etapaCAD?.hora || ''}</td>
+                    </tr>`;
+                }).join('') +
+                '</tbody></table>';
+        }
+
+        // ========================================
+        // DASHBOARD
+        // ========================================
+        function atualizarDashboard() {
+            document.getElementById('totalArmacoes').textContent = apontamentos.filter(a => a.etapas.some(e => e.setor === 'Serralheria')).length;
+            document.getElementById('totalCAD').textContent = apontamentos.filter(a => a.etapas.some(e => e.setor === 'CAD')).length;
+            document.getElementById('totalProducao').textContent = apontamentos.filter(a => a.status !== 'concluido').length;
+            document.getElementById('totalConcluidos').textContent = apontamentos.filter(a => a.status === 'concluido').length;
+            
+            // Últimos apontamentos
+            const container = document.getElementById('dashboardApontamentos');
+            const ultimos = apontamentos.slice(-5).reverse();
+            
+            if (ultimos.length === 0) {
+                container.innerHTML = '<p style="color:var(--gray);text-align:center;padding:20px;">Nenhum apontamento.</p>';
+                return;
+            }
+            
+            container.innerHTML = ultimos.map(a => `
+                <div class="timeline-item ${a.status === 'concluido' ? 'concluido' : 'em-andamento'}">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <div>
+                            <strong>${a.codigoSER}</strong> - ${a.produto}
+                            <div style="font-size:12px;color:var(--gray);margin-top:5px;">
+                                ${a.etapas.length} etapa(s) • Última: ${a.etapas[a.etapas.length-1]?.setor || '-'}
+                            </div>
+                        </div>
+                        <span class="status ${a.status === 'concluido' ? 'status-concluido' : 'status-em-andamento'}">
+                            ${a.status === 'concluido' ? '✅ Concluído' : '🔄 Em Andamento'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function filtrarApontamentos(filtro) {
+            const container = document.getElementById('todosApontamentos');
+            let filtrados = apontamentos;
+            
+            if (filtro === 'serralheria') {
+                filtrados = apontamentos.filter(a => a.status === 'serralheria');
+            } else if (filtro === 'cad') {
+                filtrados = apontamentos.filter(a => a.status === 'cad');
+            } else if (filtro === 'concluido') {
+                filtrados = apontamentos.filter(a => a.status === 'concluido');
+            }
+            
+            if (filtrados.length === 0) {
+                container.innerHTML = '<p style="color:var(--gray);text-align:center;padding:20px;">Nenhum apontamento encontrado.</p>';
+                return;
+            }
+            
+            container.innerHTML = filtrados.map(a => `
+                <div class="timeline-item ${a.status === 'concluido' ? 'concluido' : 'em-andamento'}" style="margin-bottom:15px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                        <strong>${a.codigoSER}</strong>
+                        <span class="status ${a.status === 'concluido' ? 'status-concluido' : a.status === 'serralheria' ? 'status-serralheria' : 'status-cad'}">
+                            ${a.status === 'concluido' ? '✅ Concluído' : a.status === 'serralheria' ? '🔩 Serralheria' : '📐 CAD'}
+                        </span>
+                    </div>
+                    <div style="font-size:13px;color:var(--gray);">
+                        <div>📦 Produto: ${a.produto}</div>
+                        <div>🔖 DBN: ${a.codigoDBN}</div>
+                        ${a.codigoCAD ? `<div>📐 CAD: ${a.codigoCAD}</div>` : ''}
+                    </div>
+                    <div style="margin-top:15px;padding-top:15px;border-top:1px solid var(--border);">
+                        <strong style="font-size:12px;color:var(--dark);">Etapas:</strong>
+                        ${a.etapas.map(e => `
+                            <div style="font-size:12px;margin-top:5px;padding:8px;background:#f8fafc;border-radius:8px;">
+                                <strong>${e.setor}</strong> - ${e.status === 'concluido' ? '✅' : '🔄'} 
+                                ${e.data} ${e.hora} ${e.responsavel ? `• ${e.responsavel}` : ''}
+                                ${e.forma ? `• Forma: ${e.forma}` : ''}
+                                ${e.codigoCAD ? `• ${e.codigoCAD}` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ========================================
+        // PRODUTOS
+        // ========================================
+        function salvarProduto() {
+            const nome = document.getElementById('produtoNome').value;
+            const codigo = document.getElementById('produtoCodigo').value;
+            const categoria = document.getElementById('produtoCategoria').value;
+            
+            if (!nome || !codigo) {
+                mostrarNotificacao('Preencha nome e código!', 'error');
+                return;
+            }
+            
+            if (produtos.find(p => p.codigo === codigo)) {
+                mostrarNotificacao('Código já existe!', 'error');
+                return;
+            }
+            
+            produtos.push({ codigo, nome, categoria });
+            atualizarListaProdutos();
+            atualizarSelectSerra();
+            
+            document.getElementById('produtoNome').value = '';
+            document.getElementById('produtoCodigo').value = '';
+            
+            mostrarNotificacao('Produto salvo!', 'success');
+        }
+        
+        function atualizarListaProdutos() {
+            document.getElementById('listaProdutos').innerHTML = produtos.map(p => `
+                <div style="padding:12px;background:#f8fafc;border-radius:var(--radius);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <strong>${p.nome}</strong>
+                        <span class="badge badge-insumo" style="margin-left:10px;">${p.codigo}</span>
+                    </div>
+                    <span style="font-size:12px;color:var(--gray);">${p.categoria}</span>
+                </div>
+            `).join('');
+        }
+        
+        function atualizarSelectSerra() {
+            document.getElementById('serraProduto').innerHTML = produtos
+                .filter(p => p.categoria === 'ProdutoFinal' || p.categoria === 'Parede')
+                .map(p => `<option value="${p.nome}">${p.nome} (${p.codigo})</option>`)
+                .join('');
+        }
+
+        // ========================================
+        // INICIALIZAÇÃO
+        // ========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Data atual
+            const hoje = new Date();
+            document.getElementById('dataAtual').textContent = hoje.toLocaleDateString('pt-BR', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            // Carregar dados salvos
+            carregarSequenciais();
+            carregarApontamentos();
+            
+            // Navegação
+            const links = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('.content-section');
+            const subtitles = {
+                dashboard: 'Visão geral da produção',
+                serralheria: 'Iniciar processos na serralheria',
+                cad: 'Leitura de QR Code e registro CAD',
+                apontamentos: 'Todos os apontamentos',
+                produtos: 'Cadastro de produtos'
+            };
+            
+            links.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionName = link.dataset.section;
+                    const target = document.getElementById(sectionName + '-section');
+                    
+                    sections.forEach(s => s.style.display = 'none');
+                    links.forEach(l => l.classList.remove('active'));
+                    
+                    if (target) {
+                        target.style.display = 'block';
+                        link.classList.add('active');
+                        document.getElementById('headerSubtitle').textContent = subtitles[sectionName] || '';
+                    }
+                    
+                    // Atualizar dados da seção
+                    if (sectionName === 'dashboard') atualizarDashboard();
+                    if (sectionName === 'serralheria') { atualizarSerraProcessos(); atualizarSelectSerra(); }
+                    if (sectionName === 'cad') atualizarCadRegistros();
+                    if (sectionName === 'apontamentos') filtrarApontamentos('todos');
+                    if (sectionName === 'produtos') atualizarListaProdutos();
+                });
+            });
+            
+            // Inicializar
+            atualizarDashboard();
+            atualizarSelectSerra();
+        });
+        
+        // Fechar scanner ao clicar fora
+        document.addEventListener('click', function(e) {
+            const scanner = document.getElementById('cadScannerContainer');
+            if (scanner && scanner.style.display === 'block' && !scanner.contains(e.target)) {
+                pararLeituraQR();
+            }
+        });
+    </script>
 </body>
 </html>
