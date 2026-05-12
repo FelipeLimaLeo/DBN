@@ -1553,4 +1553,64 @@ document.addEventListener('DOMContentLoaded', () => {
   setupMenu();
   carregar();
   inicializarDadosExemplo(); // apenas se vazio
+  // AUTO SAVE VISUAL
+  const toast = document.createElement('div');
+
+  toast.className = 'toast-msg';
+  toast.innerHTML = msg;
+
+  toast.style.position = 'fixed';
+  toast.style.top = '20px';
+  toast.style.right = '20px';
+  toast.style.padding = '14px 20px';
+  toast.style.borderRadius = '14px';
+  toast.style.background = tipo === 'success' ? '#22c55e' : '#ef4444';
+  toast.style.color = 'white';
+  toast.style.fontWeight = '700';
+  toast.style.zIndex = '99999';
+  toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.15)';
+
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
+// SALVAR LOCAL
+function salvar() {
+  localStorage.setItem('dbnERP', JSON.stringify({
+    itensProducao,
+    obras,
+    unidadesMontadas,
+    produtos,
+    componentesBasicos
+  }));
+
+  toast('✅ Dados salvos automaticamente');
+}
+
+// CARREGAR
+function carregar() {
+  const dados = JSON.parse(localStorage.getItem('dbnERP'));
+
+  if (!dados) return;
+
+  itensProducao = dados.itensProducao || [];
+  obras = dados.obras || [];
+  unidadesMontadas = dados.unidadesMontadas || [];
+  produtos = dados.produtos || [];
+  componentesBasicos = dados.componentesBasicos || [];
+}
+
+// INICIALIZAÇÃO
+window.addEventListener('DOMContentLoaded', () => {
+  carregar();
+  atualizarData();
+  setupMenu();
+  renderizarObras();
+  renderizarProdutos();
+
+  console.log('✅ DBN ERP Inicializado');
+});
 });
