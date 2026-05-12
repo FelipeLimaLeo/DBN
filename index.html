@@ -1,60 +1,61 @@
-<!DOCTYPE html>
-        💾 Criar Obra
-      </button>
-    </section>
+## Melhorias aplicadas
+  border-radius: 999px;
+}
 
-    <section class="panel">
-      <div class="panel-header">
-        <h2>📦 Obras</h2>
-      </div>
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
 
-      <div class="obras-lista" id="obrasLista"></div>
-    </section>
+.empty-state-icon {
+  font-size: 54px;
+  margin-bottom: 16px;
+}
 
-    <section class="panel">
-      <div class="panel-header">
-        <h2>📐 Kanban Produção</h2>
-      </div>
+@media (max-width: 1200px) {
+  .kanban-montagem-flow {
+    grid-template-columns: repeat(4, minmax(300px, 1fr));
+  }
+}
 
-      <div class="kanban-board kanban-cad-flow">
+@media (max-width: 992px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
 
-        <div class="kanban-column">
-          <div class="column-header">
-            Emitido
-            <span class="column-count">0</span>
-          </div>
-          <div class="column-body"></div>
-        </div>
+  .main {
+    margin-left: 0;
+  }
 
-        <div class="kanban-column">
-          <div class="column-header">
-            Forma
-            <span class="column-count">0</span>
-          </div>
-          <div class="column-body"></div>
-        </div>
+  .kanban-cad-flow,
+  .kanban-grc-flow,
+  .kanban-montagem-flow {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+  }
+}
 
-        <div class="kanban-column">
-          <div class="column-header">
-            Concretagem
-            <span class="column-count">0</span>
-          </div>
-          <div class="column-body"></div>
-        </div>
+@media (max-width: 768px) {
+  .header {
+    padding: 18px;
+  }
 
-        <div class="kanban-column">
-          <div class="column-header">
-            Concluído
-            <span class="column-count">0</span>
-          </div>
-          <div class="column-body"></div>
-        </div>
+  .panel {
+    padding: 18px;
+  }
 
-      </div>
-    </section>
+  .form-grid,
+  .obras-lista,
+  .produtos-lista,
+  .kanban-cad-flow,
+  .kanban-grc-flow,
+  .kanban-montagem-flow {
+    grid-template-columns: 1fr;
+  }
 
-  </main>
-
-  <script src="app.js"></script>
-</body>
-</html>
+  .nav-link span:last-child {
+    display: none;
+  }
+}
